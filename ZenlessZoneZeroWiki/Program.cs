@@ -3,11 +3,9 @@ using ZenlessZoneZeroWiki.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1) Register the DbContext with SQL Server
 builder.Services.AddDbContext<ZenlessZoneZeroContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// 2) Add MVC
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
