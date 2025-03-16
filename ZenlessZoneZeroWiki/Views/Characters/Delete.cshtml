@@ -1,0 +1,45 @@
+﻿@model ZenlessZoneZeroWiki.Models.Character
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1>Delete</h1>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>Character</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.HP)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.HP)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Attack)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Attack)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Defence)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Defence)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Element)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Element)
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="CharacterID" />
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-action="Index">Back to List</a>
+    </form>
+</div>

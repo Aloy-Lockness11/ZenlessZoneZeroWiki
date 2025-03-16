@@ -19,6 +19,7 @@ namespace ZenlessZoneZeroWiki.Data
         {
             modelBuilder.Entity<Favourite>()
                 .HasKey(f => new { f.UserID, f.CharacterID, f.WeaponID });
+
             base.OnModelCreating(modelBuilder);
         }
     }

@@ -1,0 +1,36 @@
+﻿@model ZenlessZoneZeroWiki.Models.Weapon
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Weapon</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.AttackDMG)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.AttackDMG)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Defence)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Defence)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Type)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Type)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.WeaponID">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

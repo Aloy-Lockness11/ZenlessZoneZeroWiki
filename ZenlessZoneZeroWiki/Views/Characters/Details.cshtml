@@ -1,0 +1,42 @@
+﻿@model ZenlessZoneZeroWiki.Models.Character
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Character</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.HP)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.HP)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Attack)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Attack)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Defence)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Defence)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Element)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Element)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.CharacterID">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
