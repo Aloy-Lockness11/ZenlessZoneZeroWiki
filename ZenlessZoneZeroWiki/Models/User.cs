@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace ZenlessZoneZeroWiki.Models
 {
@@ -7,20 +9,22 @@ namespace ZenlessZoneZeroWiki.Models
         [Key]
         public int UserID { get; set; }
 
-        [Required, StringLength(100)]
+        [Required]
+        [MaxLength(100)]
         public string Username { get; set; }
 
-        [Required, EmailAddress]
+        [Required]
+        [EmailAddress]
         public string Email { get; set; }
 
-        [Required, StringLength(100)]
+        [MaxLength(100)]
         public string FirstName { get; set; }
 
-        [Required, StringLength(100)]
+        [MaxLength(100)]
         public string LastName { get; set; }
 
-        public DateTime TimeCreated { get; set; } = DateTime.UtcNow;
+        public DateTime TimeCreated { get; set; }
 
-        public ICollection<Favourites> Favourites { get; set; }
+        public ICollection<Favourite> Favourites { get; set; }
     }
 }
