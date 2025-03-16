@@ -2,19 +2,30 @@
 {
     public enum WeaponType
     {
-        Support,
-        Attack,
-        Defense,
-        Anomaly,
-        Stun
+        ATTACK,
+        DEFENCE,
+        SUPPORT,
+        ANOMALY,
+        STUN
     }
 
     public enum Element
     {
-        Fire,
-        Ether,
-        Ice,
-        Physical,
-        Electric
+        ETHER,
+        FIRE,
+        ICE,
+        ELECTRIC,
+        PHYSICAL
+    }
+
+    public enum Faction
+    {
+        GENTLE_HOUSE,
+        BELOBOG_HEAVY_INDUSTRIES,
+        VICTORIA_HOUSEKEEPING_CO,
+        CRIMINAL_INVESTIGATION_SPECIAL_RESPONSE_TEAM,
+        SONS_OF_CALYDON,
+        SECTION_6,
+        OBOL_SQUAD,
     }
 }
