@@ -4,77 +4,60 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - ZenlessZoneZeroWiki</title>
+    <link rel="shortcut icon" href="~/zzzicon.ico" type="image/x-icon" />
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-
-    <!-- site.css (contains your lava-lamp, hero-section, etc.) -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-
-    <!-- If you have ZenlessZoneZeroWiki.styles.css, also reference it here -->
-    <link rel="stylesheet" href="~/ZenlessZoneZeroWiki.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <!-- NAVBAR (Bootstrap 5, dark background) -->
+    <!-- NAVBAR -->
     <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #000;">
-            <div class="container-fluid">
-            <!-- Brand / Logo -->
+        <div class="container-fluid">
             <a class="navbar-brand" href="#">
-                <!-- Replace with your own logo or text -->
-                <img src="~/images/zzz_logo.png" alt="Z-Z-Z" style="height: 40px;" />
-                <!-- Or just text: Z-Z-Z -->
+                <img src="~/images/zzzlogo.png" alt="Zenless Zone Zero" style="height: 40px;" />
             </a>
-
-            <!-- Mobile Toggle Button -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
-                    aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
 
             <!-- Nav Links & Right-Side Button -->
             <div class="collapse navbar-collapse" id="mainNavbar">
                 <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
+                    <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="#">Homepage</a>
-                        </li>
-                        <li class="nav-item">
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="#">Characters</a>
-                        </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">News</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Background</a>
+                        <a class="nav-link" href="#">Weapons</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Media</a>
+                        <a class="nav-link" href="#">Favourite</a>
                     </li>
-                    </ul>
+                </ul>
 
-                <!-- Download Now Button -->
                 <div class="d-flex">
                     <a class="btn btn-warning" href="#" role="button">Download Now</a>
                 </div>
             </div>
         </div>
-        </nav>
+    </nav>
 
-    <!-- Hero Section (optional) -->
-    <div class="hero-section d-flex align-items-center">
-    <div class="container">
+    <!-- HERO SECTION -->
+    <div class="hero-section">
+        <div class="hero-overlay">
             <h1 class="display-4">Welcome to the Zenless Zone Zero Wiki</h1>
-            <p>Learn about characters, news, media, and more!</p>
+            <p class="lead">Learn about characters, news, media, and more!</p>
         </div>
     </div>
 
-    <!-- Main Content -->
+    <!-- MAIN CONTENT -->
     <div class="container my-4">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <!-- Footer -->
+    <!-- FOOTER -->
     <footer class="footer mt-auto py-3 text-center">
         <div class="container">
             <span class="text-muted">&copy; 2025 - ZenlessZoneZeroWiki</span>
