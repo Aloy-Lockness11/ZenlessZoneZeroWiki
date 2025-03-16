@@ -20,3 +20,36 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+
+@keyframes lavaLamp {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.lava-lamp {
+    background: linear-gradient(270deg, #FF5EDF, #04C8DE, #FFE53B);
+    background-size: 600% 600%;
+    animation: lavaLamp 15s ease infinite;
+}
+
+.navbar-dark .navbar-brand,
+.navbar-dark .nav-link {
+    color: #fff;
+}
+
+
+.hero-section {
+    background: url("/images/zzz.png") no-repeat center center;
+    background-size: cover;
+    min-height: 400px;
+}

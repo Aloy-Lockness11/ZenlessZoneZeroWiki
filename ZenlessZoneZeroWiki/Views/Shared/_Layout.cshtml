@@ -4,46 +4,86 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - ZenlessZoneZeroWiki</title>
+
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- site.css (contains your lava-lamp, hero-section, etc.) -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <!-- If you have ZenlessZoneZeroWiki.styles.css, also reference it here -->
     <link rel="stylesheet" href="~/ZenlessZoneZeroWiki.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+    <!-- NAVBAR (Bootstrap 5, dark background) -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #000;">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">ZenlessZoneZeroWiki</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+            <!-- Brand / Logo -->
+            <a class="navbar-brand" href="#">
+                <!-- Replace with your own logo or text -->
+                <img src="~/images/zzz_logo.png" alt="Z-Z-Z" style="height: 40px;" />
+                <!-- Or just text: Z-Z-Z -->
+            </a>
+
+            <!-- Mobile Toggle Button -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+                    aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+
+            <!-- Nav Links & Right-Side Button -->
+            <div class="collapse navbar-collapse" id="mainNavbar">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        <a class="nav-link active" aria-current="page" href="#">Homepage</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        <a class="nav-link" href="#">Characters</a>
                         </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">News</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Background</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Media</a>
+                    </li>
                     </ul>
+
+                <!-- Download Now Button -->
+                <div class="d-flex">
+                    <a class="btn btn-warning" href="#" role="button">Download Now</a>
                 </div>
             </div>
+        </div>
         </nav>
-    </header>
+
+    <!-- Hero Section (optional) -->
+    <div class="hero-section d-flex align-items-center">
     <div class="container">
+            <h1 class="display-4">Welcome to the Zenless Zone Zero Wiki</h1>
+            <p>Learn about characters, news, media, and more!</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container my-4">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <!-- Footer -->
+    <footer class="footer mt-auto py-3 text-center">
         <div class="container">
-            &copy; 2025 - ZenlessZoneZeroWiki - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <span class="text-muted">&copy; 2025 - ZenlessZoneZeroWiki</span>
         </div>
     </footer>
+
+    <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+    @RenderSection("Scripts", required: false)
 </body>
 </html>
