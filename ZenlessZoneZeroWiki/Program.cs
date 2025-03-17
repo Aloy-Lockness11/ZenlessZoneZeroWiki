@@ -6,10 +6,17 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Pomelo.EntityFrameworkCore.MySql;
 using ZenlessZoneZeroWiki.Data;
+using FirebaseAdmin;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Get connection string
+// Add Firebase services
+FirebaseApp.Create(new AppOptions()
+{
+    Credential = Google.Apis.Auth.OAuth2.GoogleCredential.FromFile("zenlesszonezerowikiauth-firebase-adminsdk-fbsvc-8ea1214dac.json")
+});
+
+// Get connection string for database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ZenlessZoneZeroContext>(options =>
     options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 21)))

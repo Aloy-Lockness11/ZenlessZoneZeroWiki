@@ -17,6 +17,9 @@ namespace ZenlessZoneZeroWiki.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<User>()
+                .HasKey(u => u.FirebaseUid);
+
             modelBuilder.Entity<Favourite>()
                 .HasKey(f => new { f.UserID, f.CharacterID, f.WeaponID });
 
