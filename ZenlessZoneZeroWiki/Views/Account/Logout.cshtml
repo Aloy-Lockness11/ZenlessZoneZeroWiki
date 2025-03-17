@@ -1,14 +1,18 @@
 ﻿@{
-    Layout = "_Layout.cshtml";
+    Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Logout";
 }
 
-<div class="row justify-content-center">
-    <div class="col-md-6 text-center">
-        <h2>Are you sure you want to log out?</h2>
-        <form asp-action="Logout" method="post">
-            <button type="submit" class="btn btn-danger">Logout</button>
-            <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Cancel</a>
-        </form>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h2>@ViewData["Title"]</h2>
+            <hr />
+
+            <form>
+                <p>Are you sure you want to log out?</p>
+                <button type="submit" class="btn btn-primary">Logout</button>
+            </form>
+        </div>
     </div>
 </div>

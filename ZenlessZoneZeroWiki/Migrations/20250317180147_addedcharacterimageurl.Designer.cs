@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ZenlessZoneZeroWiki.Data;
 
@@ -11,9 +12,11 @@ using ZenlessZoneZeroWiki.Data;
 namespace ZenlessZoneZeroWiki.Migrations
 {
     [DbContext(typeof(ZenlessZoneZeroContext))]
-    partial class ZenlessZoneZeroContextModelSnapshot : ModelSnapshot
+    [Migration("20250317180147_addedcharacterimageurl")]
+    partial class addedcharacterimageurl
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -79,15 +82,9 @@ namespace ZenlessZoneZeroWiki.Migrations
                     b.Property<DateTime>("TimeModified")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("UserFirebaseUid")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
-
                     b.HasKey("UserID", "CharacterID", "WeaponID");
 
                     b.HasIndex("CharacterID");
-
-                    b.HasIndex("UserFirebaseUid");
 
                     b.HasIndex("WeaponID");
 
@@ -96,8 +93,11 @@ namespace ZenlessZoneZeroWiki.Migrations
 
             modelBuilder.Entity("ZenlessZoneZeroWiki.Models.User", b =>
                 {
-                    b.Property<string>("FirebaseUid")
-                        .HasColumnType("varchar(255)");
+                    b.Property<int>("UserID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("UserID"));
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -121,7 +121,7 @@ namespace ZenlessZoneZeroWiki.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
-                    b.HasKey("FirebaseUid");
+                    b.HasKey("UserID");
 
                     b.ToTable("Users");
                 });
@@ -158,7 +158,7 @@ namespace ZenlessZoneZeroWiki.Migrations
 
                     b.HasOne("ZenlessZoneZeroWiki.Models.User", "User")
                         .WithMany("Favourites")
-                        .HasForeignKey("UserFirebaseUid")
+                        .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

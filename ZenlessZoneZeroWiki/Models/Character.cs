@@ -13,9 +13,9 @@ namespace ZenlessZoneZeroWiki.Models
         public int HP { get; set; }
         public int Attack { get; set; }
         public int Defence { get; set; }
-
         public Element Element { get; set; }
 
+        public string ImageUrllink { get; set; }
         public ICollection<Favourite> Favourites { get; set; }
     }
 }

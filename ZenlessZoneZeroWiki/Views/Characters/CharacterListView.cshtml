@@ -1,0 +1,39 @@
+﻿@model IEnumerable<ZenlessZoneZeroWiki.Models.Character>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Character List";
+}
+
+<div class="container py-4">
+    <h2>@ViewData["Title"]</h2>
+    <hr />
+
+    <!-- Card-based layout using Bootstrap -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach (var character in Model)
+        {
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">@character.Name</h5>
+                        <p class="card-text">@character.Description</p>
+
+                        <!-- Basic stats (no images yet) -->
+                        <p><strong>HP:</strong> @character.HP</p>
+                        <p><strong>Attack:</strong> @character.Attack</p>
+                        <p><strong>Defence:</strong> @character.Defence</p>
+                        <p><strong>Element:</strong> @character.Element</p>
+                        <p><strong>Faction:</strong> @character.faction</p>
+
+                        <!-- "View More Details" button links to CharacterDetailsView action -->
+                        <a asp-action="CharacterDetailsView" asp-route-id="@character.CharacterID"
+                           class="btn btn-primary">
+                            View More Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
