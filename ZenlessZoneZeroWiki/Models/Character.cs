@@ -9,7 +9,7 @@ namespace ZenlessZoneZeroWiki.Models
         public int CharacterID { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public Enum faction { get; set; }
+        public Faction faction { get; set; }
         public int HP { get; set; }
         public int Attack { get; set; }
         public int Defence { get; set; }
