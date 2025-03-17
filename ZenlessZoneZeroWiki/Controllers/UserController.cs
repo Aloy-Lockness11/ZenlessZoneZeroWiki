@@ -9,19 +9,19 @@ using ZenlessZoneZeroWiki.Dto;
 namespace ZenlessZoneZeroWiki.Controllers
 {
 
-    [Route("[controller]/[action]")]
-    public class AccountController : Controller
+    
+    public class UserController : Controller
     {
         private readonly ZenlessZoneZeroContext _context;
 
         // Inject context here
-        public AccountController(ZenlessZoneZeroContext context)
+        public UserController(ZenlessZoneZeroContext context)
         {
             _context = context;
         }
 
-        [HttpGet("Login")]
-        public IActionResult Login()
+        [HttpPost("Login")]
+        public async Task<IActionResult> Login()
         {
             var firebaseUser = HttpContext.Items["User"] as FirebaseToken;
             if (firebaseUser == null)
@@ -32,10 +32,30 @@ namespace ZenlessZoneZeroWiki.Controllers
             var uid = firebaseUser.Uid;
             var email = firebaseUser.Claims["email"]?.ToString();
 
-           
+            var user = await _context.Users.FindAsync(uid);
+            if (user == null)
+            {
+                return NotFound("User not registered.");
+            }
 
-            // Proceed with logged-in user
-            return RedirectToAction("Index", "Home");
+            return Ok(new 
+                { message = "Login successful", 
+                redirectUrl = "/Home/Index" 
+            });
+        }
+
+
+
+        [HttpPost("Logout")]
+        public IActionResult Logout()
+        {
+            HttpContext.Items["User"] = null; 
+
+            return Ok(new
+            {
+                message = "User logged out successfully.",
+                redirectUrl = "/Home/Index" 
+            });
         }
 
 
@@ -69,8 +89,13 @@ namespace ZenlessZoneZeroWiki.Controllers
             _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
 
-            return Ok("User registered successfully.");
+            return Ok(new
+            {
+                message = "User registered successfully.",
+                redirectUrl = "/Account/Loggin"
+            });
         }
+
 
 
         [HttpPut]

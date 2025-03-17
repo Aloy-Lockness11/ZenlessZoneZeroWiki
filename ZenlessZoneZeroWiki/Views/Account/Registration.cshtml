@@ -1,39 +1,34 @@
-﻿@model ZenlessZoneZeroWiki.Models.Registration
-
+﻿
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Registration";
 }
-
+<script src="https://www.gstatic.com/firebasejs/10.3.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.3.0/firebase-auth.js"></script>
+<script src="/js/firebaseConfig.js"></script>
+<script src="/js/registerUser.js"></script>
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
             <h2>@ViewData["Title"]</h2>
-            <hr />
 
-       
-            <form>
-                <div class="mb-3">
-                    <label asp-for="Username" class="form-label"></label>
-                    <input asp-for="Username" class="form-control" />
-                </div>
-
-                <div class="mb-3">
-                    <label asp-for="Email" class="form-label"></label>
-                    <input asp-for="Email" class="form-control" />
-                </div>
-
-                <div class="mb-3">
-                    <label asp-for="Password" class="form-label"></label>
-                    <input asp-for="Password" class="form-control" />
-                </div>
-
-                <div class="mb-3">
-                    <label asp-for="ConfirmPassword" class="form-label"></label>
-                    <input asp-for="ConfirmPassword" class="form-control" />
-                </div>
-
-                <button type="submit" class="btn btn-primary">Register</button>
+            <form onsubmit="event.preventDefault(); registerUser(
+                document.getElementById('email').value,
+                document.getElementById('password').value,
+                document.getElementById('firstName').value,
+                document.getElementById('lastName').value,
+                document.getElementById('username').value);">
+                <label>Username:</label>
+                <input type="text" id="username" required><br>
+                <label>Email:</label>
+                <input type="email" id="email" required><br>
+                <label>Password:</label>
+                <input type="password" id="password" required><br>
+                <label>First Name:</label>
+                <input type="text" id="firstName" required><br>
+                <label>Last Name:</label>
+                <input type="text" id="lastName" required><br>
+                <button type="submit">Register</button>
             </form>
         </div>
     </div>

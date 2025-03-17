@@ -2,7 +2,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Logout";
 }
-
+<script src="/js/logoutUser.js"></script>
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
@@ -11,7 +11,7 @@
 
             <form>
                 <p>Are you sure you want to log out?</p>
-                <button type="submit" class="btn btn-primary">Logout</button>
+                <button onclick="logoutUser()">Logout</button>
             </form>
         </div>
     </div>
