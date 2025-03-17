@@ -13,8 +13,12 @@ namespace ZenlessZoneZeroWiki.Controllers
         {
             return View();
         }
+
+        [HttpGet]
+        [Route("Registration")]
+        public IActionResult Registration()
+        {
+            return View();
+        }
     }
-
-
 }
-

@@ -6,7 +6,6 @@
         public int HP { get; set; }
         public int Attack { get; set; }
         public int Defence { get; set; }
-
         public string Element { get; set; }
     }
 }

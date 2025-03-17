@@ -50,11 +50,9 @@ namespace ZenlessZoneZeroWiki.Controllers
         }
 
         // POST: Characters/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CharacterID,HP,Attack,Defence,Element")] Character character)
+        public async Task<IActionResult> Create([Bind("CharacterID,Name,Description,faction,HP,Attack,Defence,Element")] Character character)
         {
             if (ModelState.IsValid)
             {
@@ -82,11 +80,9 @@ namespace ZenlessZoneZeroWiki.Controllers
         }
 
         // POST: Characters/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CharacterID,HP,Attack,Defence,Element")] Character character)
+        public async Task<IActionResult> Edit(int id, [Bind("CharacterID,Name,Description,faction,HP,Attack,Defence,Element")] Character character)
         {
             if (id != character.CharacterID)
             {
@@ -147,6 +143,36 @@ namespace ZenlessZoneZeroWiki.Controllers
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+
+        // GET: /Characters/CharacterListView
+        [HttpGet]
+        public async Task<IActionResult> CharacterListView()
+        {
+            var characters = await _context.Characters.ToListAsync();
+            // Looks for "CharacterListView.cshtml" by default in Views/Characters
+            return View("CharacterListView", characters);
+        }
+
+        // GET: /Characters/CharacterDetailsView/5
+        [HttpGet]
+        public async Task<IActionResult> CharacterDetailsView(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var character = await _context.Characters
+                .FirstOrDefaultAsync(m => m.CharacterID == id);
+            if (character == null)
+            {
+                return NotFound();
+            }
+
+            // Looks for "CharacterDetailsView.cshtml" in Views/Characters
+            return View("CharacterDetailsView", character);
         }
 
         private bool CharacterExists(int id)
