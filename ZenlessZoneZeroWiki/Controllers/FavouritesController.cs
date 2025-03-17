@@ -27,7 +27,7 @@ namespace ZenlessZoneZeroWiki.Controllers
         }
 
         // GET: Favourites/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(string id)
         {
             if (id == null)
             {
@@ -38,7 +38,7 @@ namespace ZenlessZoneZeroWiki.Controllers
                 .Include(f => f.Character)
                 .Include(f => f.User)
                 .Include(f => f.Weapon)
-                .FirstOrDefaultAsync(m => m.UserID == id);
+                .FirstOrDefaultAsync(m => m.FirebaseUid == id);
             if (favourite == null)
             {
                 return NotFound();
@@ -51,7 +51,7 @@ namespace ZenlessZoneZeroWiki.Controllers
         public IActionResult Create()
         {
             ViewData["CharacterID"] = new SelectList(_context.Characters, "CharacterID", "CharacterID");
-            ViewData["UserID"] = new SelectList(_context.Users, "UserID", "Email");
+            ViewData["FirebaseUid"] = new SelectList(_context.Users, "FirebaseUid", "FirebaseUid");
             ViewData["WeaponID"] = new SelectList(_context.Weapons, "WeaponID", "WeaponID");
             return View();
         }
@@ -61,7 +61,7 @@ namespace ZenlessZoneZeroWiki.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("FavoriteID,UserID,CharacterID,WeaponID,TimeModified")] Favourite favourite)
+        public async Task<IActionResult> Create([Bind("FavoriteID,FirebaseUid,CharacterID,WeaponID,TimeModified")] Favourite favourite)
         {
             if (ModelState.IsValid)
             {
@@ -70,13 +70,13 @@ namespace ZenlessZoneZeroWiki.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["CharacterID"] = new SelectList(_context.Characters, "CharacterID", "CharacterID", favourite.CharacterID);
-            ViewData["UserID"] = new SelectList(_context.Users, "UserID", "Email", favourite.UserID);
+            ViewData["FirebaseUid"] = new SelectList(_context.Users, "FirebaseUid", "FirebaseUid", favourite.FirebaseUid);
             ViewData["WeaponID"] = new SelectList(_context.Weapons, "WeaponID", "WeaponID", favourite.WeaponID);
             return View(favourite);
         }
 
         // GET: Favourites/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(string id)
         {
             if (id == null)
             {
@@ -89,7 +89,7 @@ namespace ZenlessZoneZeroWiki.Controllers
                 return NotFound();
             }
             ViewData["CharacterID"] = new SelectList(_context.Characters, "CharacterID", "CharacterID", favourite.CharacterID);
-            ViewData["UserID"] = new SelectList(_context.Users, "UserID", "Email", favourite.UserID);
+            ViewData["FirebaseUid"] = new SelectList(_context.Users, "FirebaseUid", "FirebaseUid", favourite.FirebaseUid);
             ViewData["WeaponID"] = new SelectList(_context.Weapons, "WeaponID", "WeaponID", favourite.WeaponID);
             return View(favourite);
         }
@@ -99,9 +99,9 @@ namespace ZenlessZoneZeroWiki.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("FavoriteID,UserID,CharacterID,WeaponID,TimeModified")] Favourite favourite)
+        public async Task<IActionResult> Edit(string id, [Bind("FavoriteID,FirebaseUid,CharacterID,WeaponID,TimeModified")] Favourite favourite)
         {
-            if (id != favourite.UserID)
+            if (id != favourite.FirebaseUid)
             {
                 return NotFound();
             }
@@ -115,7 +115,7 @@ namespace ZenlessZoneZeroWiki.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!FavouriteExists(favourite.UserID))
+                    if (!FavouriteExists(favourite.FirebaseUid))
                     {
                         return NotFound();
                     }
@@ -127,13 +127,13 @@ namespace ZenlessZoneZeroWiki.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["CharacterID"] = new SelectList(_context.Characters, "CharacterID", "CharacterID", favourite.CharacterID);
-            ViewData["UserID"] = new SelectList(_context.Users, "UserID", "Email", favourite.UserID);
+            ViewData["FirebaseUid"] = new SelectList(_context.Users, "FirebaseUid", "FirebaseUid", favourite.FirebaseUid);
             ViewData["WeaponID"] = new SelectList(_context.Weapons, "WeaponID", "WeaponID", favourite.WeaponID);
             return View(favourite);
         }
 
         // GET: Favourites/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(string id)
         {
             if (id == null)
             {
@@ -144,7 +144,7 @@ namespace ZenlessZoneZeroWiki.Controllers
                 .Include(f => f.Character)
                 .Include(f => f.User)
                 .Include(f => f.Weapon)
-                .FirstOrDefaultAsync(m => m.UserID == id);
+                .FirstOrDefaultAsync(m => m.FirebaseUid == id);
             if (favourite == null)
             {
                 return NotFound();
@@ -156,7 +156,7 @@ namespace ZenlessZoneZeroWiki.Controllers
         // POST: Favourites/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(string id)
         {
             var favourite = await _context.Favourites.FindAsync(id);
             if (favourite != null)
@@ -168,9 +168,9 @@ namespace ZenlessZoneZeroWiki.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool FavouriteExists(int id)
+        private bool FavouriteExists(string id)
         {
-            return _context.Favourites.Any(e => e.UserID == id);
+            return _context.Favourites.Any(e => e.FirebaseUid == id);
         }
     }
 }
