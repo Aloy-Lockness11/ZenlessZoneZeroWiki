@@ -72,7 +72,34 @@ namespace ZenlessZoneZeroWiki.Controllers
             return Ok("User registered successfully.");
         }
 
-    
+
+        [HttpPut]
+        [Route("UpdateUserDetails")]
+        public async Task<IActionResult> UpdateUserDetails([FromBody] UserUpdateDTO updatedDetails)
+        {
+            var firebaseUser = HttpContext.Items["User"] as FirebaseToken;
+
+            if (firebaseUser == null)
+            {
+                return Unauthorized("Firebase authentication required.");
+            }
+
+            var user = await _context.Users.FindAsync(firebaseUser.Uid);
+
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            user.FirstName = updatedDetails.FirstName;
+            user.LastName = updatedDetails.LastName;
+            user.Username = updatedDetails.Username;
+
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+
+            return Ok("User details updated successfully.");
+        }
 
         public IActionResult ProtectedAction()
         {
@@ -82,6 +109,8 @@ namespace ZenlessZoneZeroWiki.Controllers
             // Proceed knowing user is authenticated
             return View();
         }
+
+        
     }
 
 
