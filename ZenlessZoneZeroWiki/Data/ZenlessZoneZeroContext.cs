@@ -21,7 +21,7 @@ namespace ZenlessZoneZeroWiki.Data
                 .HasKey(u => u.FirebaseUid);
 
             modelBuilder.Entity<Favourite>()
-                .HasKey(f => new { f.UserID, f.CharacterID, f.WeaponID });
+                .HasKey(f => new { f.FirebaseUid, f.CharacterID, f.WeaponID });
 
             base.OnModelCreating(modelBuilder);
         }
