@@ -101,6 +101,39 @@ namespace ZenlessZoneZeroWiki.Controllers
             return Ok("User details updated successfully.");
         }
 
+        [HttpDelete("DeleteUser")]
+        public async Task<IActionResult> DeleteUser()
+        {
+            var firebaseUser = HttpContext.Items["User"] as FirebaseAdmin.Auth.FirebaseToken;
+
+            if (firebaseUser == null)
+            {
+                return Unauthorized("Firebase authentication required.");
+            }
+
+            var user = await _context.Users.FindAsync(firebaseUser.Uid);
+
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            // Remove associated favorites first due to FK constraints
+            var favourites = _context.Favourites.Where(f => f.FirebaseUid == user.FirebaseUid);
+            _context.Favourites.RemoveRange(favourites);
+
+            // Remove user from database
+            _context.Users.Remove(user);
+
+            await _context.SaveChangesAsync();
+
+            // Optional: Delete user from Firebase Auth as well 
+            await FirebaseAdmin.Auth.FirebaseAuth.DefaultInstance.DeleteUserAsync(firebaseUser.Uid);
+
+            return Ok("User deleted successfully.");
+        }
+
+
         public IActionResult ProtectedAction()
         {
             if (HttpContext.Items["User"] is not FirebaseToken firebaseUser)

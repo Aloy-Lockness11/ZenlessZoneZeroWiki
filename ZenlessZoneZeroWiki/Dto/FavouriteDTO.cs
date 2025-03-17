@@ -2,7 +2,7 @@
 {
     public class FavouriteDTO
     {
-        public int UserID { get; set; }
+        public string FirebaseUid { get; set; }
         public int CharacterID { get; set; }
         public int WeaponID { get; set; }
 
