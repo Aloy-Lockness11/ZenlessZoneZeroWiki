@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Pomelo.EntityFrameworkCore.MySql;
 using ZenlessZoneZeroWiki.Data;
 using FirebaseAdmin;
+using ZenlessZoneZeroWiki.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +30,8 @@ builder.Services.AddServerSideBlazor();
 
 
 var app = builder.Build();
+// Middleware registration
+app.UseMiddleware<FirebaseAuthMiddleware>();
 
 // 3. Use environment-specific middleware
 if (!app.Environment.IsDevelopment())
@@ -42,6 +45,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
+
 
 
 app.MapControllerRoute(
