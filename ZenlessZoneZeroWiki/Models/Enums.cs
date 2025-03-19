@@ -15,11 +15,12 @@
         FIRE,
         ICE,
         ELECTRIC,
-        PHYSICAL
+        PHYSICAL,
     }
 
     public enum Faction
     {
+        STARS_OF_LYRA,
         GENTLE_HOUSE,
         BELOBOG_HEAVY_INDUSTRIES,
         VICTORIA_HOUSEKEEPING_CO,
@@ -27,5 +28,6 @@
         SONS_OF_CALYDON,
         SECTION_6,
         OBOL_SQUAD,
+        CUNNING_HARES,
     }
 }
