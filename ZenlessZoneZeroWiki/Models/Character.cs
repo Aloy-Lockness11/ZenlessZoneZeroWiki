@@ -9,13 +9,15 @@ namespace ZenlessZoneZeroWiki.Models
         public int CharacterID { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public Faction faction { get; set; }
+        public Faction? faction { get; set; }
+        public CharacterType? CharacterType { get; set; } 
         public int HP { get; set; }
         public int Attack { get; set; }
         public int Defence { get; set; }
-        public Element Element { get; set; }
-
+        public Element? Element { get; set; }
+        public string TypeUrllink { get; set; }
         public string ImageUrllink { get; set; }
+        public string FactionimageUrllink { get; set; }
         public ICollection<Favourite> Favourites { get; set; }
     }
 }

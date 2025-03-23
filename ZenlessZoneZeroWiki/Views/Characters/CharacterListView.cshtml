@@ -5,37 +5,44 @@
     ViewData["Title"] = "Character List";
 }
 
-<div class="container py-4">
+<!-- Container now has the 'lava-lamp' class for the animated gradient background -->
+<div class="container py-4 lava-lamp">
     <h2>@ViewData["Title"]</h2>
     <hr />
 
-    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
         @foreach (var character in Model)
         {
             <div class="col">
-                <div class="card text-center" style="background-color: #1E1E2E; border: none; border-radius: 8px;">
-                    <div class="position-relative p-3">
+                <div class="glow-border">
 
-                        <!-- Main Character Image in the center -->
+                <!-- Use 'character-card' class (from your snippet) to get the hover effect -->
+                <div class="card character-card border-0 glowing-image-container">
+                    <span class="position-absolute"
+                          style="top: 1rem; left: 1rem; font-size: 1.25rem; color: #fff;">
+                        <i class="bi bi-stars"></i>
+                    </span>
+
+                    <div class="card-body text-white d-flex flex-column align-items-center p-4">
+                        <!-- Character Image -->
                         <img src="@character.ImageUrllink"
                              alt="@character.Name"
-                             class="img-fluid rounded"
-                             style="height: 150px; object-fit: cover;" />
-                    </div>
+                             class="img-fluid rounded mb-3"
+                             style="max-height: 150px; object-fit: cover;" />
 
-                    <div class="card-body">
-                        <h5 class="card-title text-white">@character.Name</h5>
+                        <!-- Character Name -->
+                        <h5 class="card-title mb-2">@character.Name</h5>
 
                         <!-- "View More Details" button -->
                         <a asp-action="CharacterDetailsView"
                            asp-route-id="@character.CharacterID"
-                           class="btn btn-warning btn-sm mt-2">
+                           class="btn btn-warning btn-sm mt-auto">
                             View More Details
                         </a>
                     </div>
-				</div>
-			</div>
-		}
-	</div>
+                </div>
+                </div>
+            </div>
+        }
+    </div>
 </div>
-

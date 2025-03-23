@@ -50,11 +50,9 @@ namespace ZenlessZoneZeroWiki.Controllers
         }
 
         // POST: Weapons/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("WeaponID,AttackDMG,Defence,Type")] Weapon weapon)
+        public async Task<IActionResult> Create([Bind("WeaponID,AttackDMG,Defence,Type,Description,ImageUrllink")] Weapon weapon)
         {
             if (ModelState.IsValid)
             {
@@ -82,11 +80,9 @@ namespace ZenlessZoneZeroWiki.Controllers
         }
 
         // POST: Weapons/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("WeaponID,AttackDMG,Defence,Type")] Weapon weapon)
+        public async Task<IActionResult> Edit(int id, [Bind("WeaponID,AttackDMG,Defence,Type,Description,ImageUrllink")] Weapon weapon)
         {
             if (id != weapon.WeaponID)
             {
@@ -147,6 +143,33 @@ namespace ZenlessZoneZeroWiki.Controllers
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        // GET: /Weapons/WeaponListView
+        [HttpGet]
+        public async Task<IActionResult> WeaponListView()
+        {
+            var weapons = await _context.Weapons.ToListAsync();
+            return View("WeaponListView", weapons);
+        }
+
+        // GET: /Weapons/WeaponDetailsView/5
+        [HttpGet]
+        public async Task<IActionResult> WeaponDetailsView(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var weapon = await _context.Weapons
+                .FirstOrDefaultAsync(m => m.WeaponID == id);
+            if (weapon == null)
+            {
+                return NotFound();
+            }
+
+            return View("WeaponDetailsView", weapon);
         }
 
         private bool WeaponExists(int id)
