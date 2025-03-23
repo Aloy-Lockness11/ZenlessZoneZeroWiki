@@ -9,6 +9,15 @@
         STUN
     }
 
+    public enum CharacterType
+    {
+        ATTACK,
+        DEFENCE,
+        SUPPORT,
+        ANOMALY,
+        STUN
+    }
+
     public enum Element
     {
         ETHER,

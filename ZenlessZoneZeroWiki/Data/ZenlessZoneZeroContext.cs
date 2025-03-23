@@ -15,6 +15,7 @@ namespace ZenlessZoneZeroWiki.Data
         public DbSet<Weapon> Weapons { get; set; }
         public DbSet<Favourite> Favourites { get; set; }
 
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()

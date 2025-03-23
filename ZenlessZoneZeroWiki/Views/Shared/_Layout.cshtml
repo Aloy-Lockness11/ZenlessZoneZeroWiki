@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <title>@ViewData["Title"] ZenlessZoneZeroWiki</title>
-    <link rel="shortcut icon" href="~/images/zzzicon.ico" type="image/x-icon" />
+    <link rel="icon" href="~/zzzicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
@@ -15,7 +15,7 @@
             <!-- BRAND/LOGO -->
             <a class="navbar-brand" href="#">
                 <img src="~/images/zzzlogo.png" alt="Zenless Zone Zero" style="height: 40px;" />
-            </a>s
+            </a>
 
             <!-- Collapsible Navbar Content -->
             <div class="collapse navbar-collapse" id="mainNavbar">
@@ -25,10 +25,10 @@
                         <a class="nav-link" href="@Url.Action("CharacterListView", "Characters")">Characters</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="@Url.Action("Index", "Weapons")">Weapons</a>
+                        <a class="nav-link" href="@Url.Action("WeaponListView", "Weapons")">Weapons</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="@Url.Action("FavouriteListView", "Favourite")">Favourite</a>
+                        <a class="nav-link" href="@Url.Action("FavouriteListView", "Favourites")">Favourites</a>
                     </li>
                 </ul>
 
