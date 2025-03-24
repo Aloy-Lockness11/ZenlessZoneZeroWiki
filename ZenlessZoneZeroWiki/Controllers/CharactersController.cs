@@ -17,7 +17,22 @@ namespace ZenlessZoneZeroWiki.Controllers
         // GET: Characters
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Characters.ToListAsync());
+            var characters = await _context.Characters.ToListAsync();
+
+            var firebaseUid = User?.Claims?.FirstOrDefault(c => c.Type == "uid")?.Value;
+            var favoritedCharacterIds = new List<int>();
+
+            if (firebaseUid != null)
+            {
+                favoritedCharacterIds = await _context.Favourites
+                    .Where(f => f.FirebaseUid == firebaseUid && f.CharacterID != null)
+                    .Select(f => f.CharacterID.Value)
+                    .ToListAsync();
+            }
+
+            ViewBag.FavoritedCharacterIds = favoritedCharacterIds;
+
+            return View(characters);
         }
 
         // GET: Characters/Details/5

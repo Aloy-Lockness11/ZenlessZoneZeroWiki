@@ -20,10 +20,14 @@ namespace ZenlessZoneZeroWiki.Controllers
         }
 
         [HttpGet("Login")]
-        public IActionResult Login()
+        public IActionResult Login(string message = null)
         {
+            if (!string.IsNullOrEmpty(message))
+                TempData["ErrorMessage"] = message;
+
             return View();
         }
+
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromForm] UserLoginDTO model)
         {

@@ -16,15 +16,21 @@ namespace ZenlessZoneZeroWiki.Data
         public DbSet<Favourite> Favourites { get; set; }
 
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+           protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<User>()
-                .HasKey(u => u.FirebaseUid);
+            modelBuilder.Entity<Favourite>()
+                .HasOne(f => f.Character)
+                .WithMany(c => c.Favourites)
+                .HasForeignKey(f => f.CharacterID)
+                .IsRequired(false);
 
             modelBuilder.Entity<Favourite>()
-                .HasKey(f => new { f.FirebaseUid, f.CharacterID, f.WeaponID });
-
-            base.OnModelCreating(modelBuilder);
+                .HasOne(f => f.Weapon)
+                .WithMany(w => w.Favourites)
+                .HasForeignKey(f => f.WeaponID)
+                .IsRequired(false);
         }
+
     }
 }
+

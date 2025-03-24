@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ZenlessZoneZeroWiki.Migrations
 {
     /// <inheritdoc />
-    public partial class finalImplemeents1 : Migration
+    public partial class finalImplemeents5 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -92,22 +92,22 @@ namespace ZenlessZoneZeroWiki.Migrations
                 name: "Favourites",
                 columns: table => new
                 {
+                    FavouriteID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     FirebaseUid = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    CharacterID = table.Column<int>(type: "int", nullable: false),
-                    WeaponID = table.Column<int>(type: "int", nullable: false),
-                    FavouriteID = table.Column<int>(type: "int", nullable: false),
+                    CharacterID = table.Column<int>(type: "int", nullable: true),
+                    WeaponID = table.Column<int>(type: "int", nullable: true),
                     TimeModified = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Favourites", x => new { x.FirebaseUid, x.CharacterID, x.WeaponID });
+                    table.PrimaryKey("PK_Favourites", x => x.FavouriteID);
                     table.ForeignKey(
                         name: "FK_Favourites_Characters_CharacterID",
                         column: x => x.CharacterID,
                         principalTable: "Characters",
-                        principalColumn: "CharacterID",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "CharacterID");
                     table.ForeignKey(
                         name: "FK_Favourites_Users_FirebaseUid",
                         column: x => x.FirebaseUid,
@@ -118,8 +118,7 @@ namespace ZenlessZoneZeroWiki.Migrations
                         name: "FK_Favourites_Weapons_WeaponID",
                         column: x => x.WeaponID,
                         principalTable: "Weapons",
-                        principalColumn: "WeaponID",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "WeaponID");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -127,6 +126,11 @@ namespace ZenlessZoneZeroWiki.Migrations
                 name: "IX_Favourites_CharacterID",
                 table: "Favourites",
                 column: "CharacterID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Favourites_FirebaseUid",
+                table: "Favourites",
+                column: "FirebaseUid");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Favourites_WeaponID",

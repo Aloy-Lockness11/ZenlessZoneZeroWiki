@@ -2,13 +2,26 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Weapon Details";
+    var isLoggedIn = Context.Session.GetString("AuthToken") != null;
 }
 
 <div class="hero-section" style="position: relative;">
     <div class="hero-overlay container py-4" style="position: relative;">
         <span class="position-absolute"
               style="top:1rem; right:1rem; font-size:1.5rem; color:gold; z-index:9999;">
-            <i class="bi bi-star-fill"></i>
+            @if (isLoggedIn)
+            {
+                <a asp-controller="Favourites" asp-action="ToggleFavourite" asp-route-characterId="@Model.WeaponID">
+                    <i class="bi bi-star-fill" title="Add to Favourites"></i>
+                </a>
+            }
+            else
+            {
+                <a asp-controller="Account" asp-action="Login"
+                   asp-route-message="Wanna favorite? You gotta log in first, but I bet you already knew that.">
+                    <i class="bi bi-star" title="Login to favorite"></i>
+                </a>
+            }
         </span>
 
         <div class="text-white p-4">

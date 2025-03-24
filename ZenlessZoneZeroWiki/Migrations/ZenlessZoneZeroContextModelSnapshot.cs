@@ -75,24 +75,30 @@ namespace ZenlessZoneZeroWiki.Migrations
 
             modelBuilder.Entity("ZenlessZoneZeroWiki.Models.Favourite", b =>
                 {
-                    b.Property<string>("FirebaseUid")
-                        .HasColumnType("varchar(255)");
+                    b.Property<int>("FavouriteID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("FavouriteID"));
 
                     b.Property<int?>("CharacterID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("WeaponID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("FavouriteID")
-                        .HasColumnType("int");
+                    b.Property<string>("FirebaseUid")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
 
                     b.Property<DateTime>("TimeModified")
                         .HasColumnType("datetime(6)");
 
-                    b.HasKey("FirebaseUid", "CharacterID", "WeaponID");
+                    b.Property<int?>("WeaponID")
+                        .HasColumnType("int");
+
+                    b.HasKey("FavouriteID");
 
                     b.HasIndex("CharacterID");
+
+                    b.HasIndex("FirebaseUid");
 
                     b.HasIndex("WeaponID");
 
@@ -169,9 +175,7 @@ namespace ZenlessZoneZeroWiki.Migrations
                 {
                     b.HasOne("ZenlessZoneZeroWiki.Models.Character", "Character")
                         .WithMany("Favourites")
-                        .HasForeignKey("CharacterID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CharacterID");
 
                     b.HasOne("ZenlessZoneZeroWiki.Models.User", "User")
                         .WithMany("Favourites")
@@ -181,9 +185,7 @@ namespace ZenlessZoneZeroWiki.Migrations
 
                     b.HasOne("ZenlessZoneZeroWiki.Models.Weapon", "Weapon")
                         .WithMany("Favourites")
-                        .HasForeignKey("WeaponID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("WeaponID");
 
                     b.Navigation("Character");
 
