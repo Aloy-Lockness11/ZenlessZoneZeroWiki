@@ -1,91 +1,65 @@
 ﻿@model ZenlessZoneZeroWiki.Models.Character
-
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Character Details";
 }
 
 <div class="container py-4">
-    <div class="card border-0"
-         style="background: linear-gradient(90deg, #1E1E2E 0%, #292A3C 100%);
-                border-radius: 12px; position: relative;">
-
-        <!-- star icon -->
-        <span class="position-absolute"
-              style="top: 1rem; right: 1rem; font-size: 1.5rem; color: #fff;">
-            <i class="bi bi-stars"></i>
+    <div class="card border-0" style="background: linear-gradient(90deg,#1E1E2E,#292A3C); border-radius:12px; position:relative;">
+        <span class="position-absolute" style="top:1rem; right:1rem; font-size:1.5rem; color:gold; z-index:10;">
+            <i class="bi bi-star-fill"></i>
         </span>
 
         <div class="card-body text-white p-4">
             <div class="row">
-                <!-- LEFT COLUMN: Name above the image -->
-                <div class="col-md-4">
-                    <div class="text-center mb-3">
-                        <h2>@Model.Name</h2>
-                    </div>
-                    <div class="d-flex justify-content-center">
-                        <img src="@Model.ImageUrllink"
-                             alt="@Model.Name"
-                             class="img-fluid rounded"
-                             style="max-height: 220px; object-fit: cover;" />
-                    </div>
+                <div class="col-md-4 text-center mb-3">
+                    <h2>@Model.Name</h2>
+                    <img src="@Model.ImageUrllink" alt="@Model.Name" class="img-fluid rounded" style="max-height:220px; object-fit:cover;" />
                 </div>
 
-                <!-- RIGHT COLUMN: Badges at top, then stats & description -->
                 <div class="col-md-8">
-                    <div class="d-flex justify-content-end align-items-center mb-3">
-                        <span class="badge bg-primary d-flex align-items-center gap-1 me-2">
-                            <img src="@Model.TypeUrllink" alt="Type Icon" style="height: 16px;" />
+                    <div class="d-flex justify-content-end mb-3" style="padding-right:3rem;">
+                        <span class="badge bg-primary me-2 d-flex align-items-center gap-1">
+                            <img src="@Model.TypeUrllink" alt="Type Icon" style="height:16px;" />
                             @Model.CharacterType
                         </span>
                         <span class="badge bg-secondary d-flex align-items-center gap-1">
-                            <img src="@Model.FactionimageUrllink" alt="Faction Icon" style="height: 16px;" />
+                            <img src="@Model.FactionimageUrllink" alt="Faction Icon" style="height:16px;" />
                             @Model.faction
                         </span>
                     </div>
 
-                    <!-- Stats -->
                     <div class="row g-3">
-                        <!-- HP -->
                         <div class="col-sm-6">
-                            <label class="fw-bold d-block">HP</label>
-                            <div class="progress" style="height: 6px;">
-                                <div class="progress-bar bg-success" role="progressbar"
-                                     style="width:@($"{Model.HP / 100}%");"></div>
+                            <label class="fw-bold">HP</label>
+                            <div class="progress" style="height:6px;">
+                                <div class="progress-bar bg-success" style="width:@(Model.HP / 100)%"></div>
                             </div>
                             <span class="small">@Model.HP</span>
                         </div>
-
-                        <!-- ATK -->
                         <div class="col-sm-6">
-                            <label class="fw-bold d-block">ATK</label>
-                            <div class="progress" style="height: 6px;">
-                                <div class="progress-bar bg-danger" role="progressbar"
-                                     style="width:@($"{Model.Attack / 100}%");"></div>
+                            <label class="fw-bold">ATK</label>
+                            <div class="progress" style="height:6px;">
+                                <div class="progress-bar bg-danger" style="width:@(Model.Attack / 100)%"></div>
                             </div>
                             <span class="small">@Model.Attack</span>
                         </div>
-
-                        <!-- DEF -->
                         <div class="col-sm-6">
-                            <label class="fw-bold d-block">DEF</label>
-                            <div class="progress" style="height: 6px;">
-                                <div class="progress-bar bg-primary" role="progressbar"
-                                     style="width:@($"{Model.Defence / 100}%");"></div>
+                            <label class="fw-bold">DEF</label>
+                            <div class="progress" style="height:6px;">
+                                <div class="progress-bar bg-primary" style="width:@(Model.Defence / 100)%"></div>
                             </div>
                             <span class="small">@Model.Defence</span>
                         </div>
                     </div>
 
-                    <!-- Description -->
                     <div class="mt-4">
-                        <label class="fw-bold d-block">Description</label>
+                        <label class="fw-bold">Description</label>
                         <p>@Model.Description</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Back button -->
             <div class="mt-4">
                 <a asp-action="CharacterListView" class="btn btn-secondary">Back to List</a>
             </div>

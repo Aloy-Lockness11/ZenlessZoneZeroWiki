@@ -1,11 +1,8 @@
 ﻿@model IEnumerable<ZenlessZoneZeroWiki.Models.Character>
-
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Character List";
 }
-
-<!-- Container now has the 'lava-lamp' class for the animated gradient background -->
 <div class="container py-4 lava-lamp">
     <h2>@ViewData["Title"]</h2>
     <hr />
@@ -15,32 +12,18 @@
         {
             <div class="col">
                 <div class="glow-border">
+                    <div class="card character-card border-0 glowing-image-container position-relative">
+                        <span class="position-absolute" style="top: 1rem; right: 1rem; font-size: 1.25rem; color: gold; z-index: 10;">
+                            <i class="bi bi-star-fill"></i>
+                        </span>
 
-                <!-- Use 'character-card' class (from your snippet) to get the hover effect -->
-                <div class="card character-card border-0 glowing-image-container">
-                    <span class="position-absolute"
-                          style="top: 1rem; left: 1rem; font-size: 1.25rem; color: #fff;">
-                        <i class="bi bi-stars"></i>
-                    </span>
 
-                    <div class="card-body text-white d-flex flex-column align-items-center p-4">
-                        <!-- Character Image -->
-                        <img src="@character.ImageUrllink"
-                             alt="@character.Name"
-                             class="img-fluid rounded mb-3"
-                             style="max-height: 150px; object-fit: cover;" />
-
-                        <!-- Character Name -->
-                        <h5 class="card-title mb-2">@character.Name</h5>
-
-                        <!-- "View More Details" button -->
-                        <a asp-action="CharacterDetailsView"
-                           asp-route-id="@character.CharacterID"
-                           class="btn btn-warning btn-sm mt-auto">
-                            View More Details
-                        </a>
+                        <div class="card-body text-white d-flex flex-column align-items-center p-4">
+                            <img src="@character.ImageUrllink" alt="@character.Name" class="img-fluid rounded mb-3" style="max-height:150px; object-fit:cover;" />
+                            <h5 class="card-title mb-2">@character.Name</h5>
+                            <a asp-action="CharacterDetailsView" asp-route-id="@character.CharacterID" class="btn btn-warning btn-sm mt-auto">View More Details</a>
+                        </div>
                     </div>
-                </div>
                 </div>
             </div>
         }
