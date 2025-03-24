@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ZenlessZoneZeroWiki.Data;
 using ZenlessZoneZeroWiki.Models;
+using ZenlessZoneZeroWiki.DTOs;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ZenlessZoneZeroWiki.Controllers
 {
@@ -14,163 +13,125 @@ namespace ZenlessZoneZeroWiki.Controllers
     {
         private readonly ZenlessZoneZeroContext _context;
 
+        private string firebaseUid = "firebase-uid-123abc";
+
         public FavouritesController(ZenlessZoneZeroContext context)
         {
             _context = context;
         }
 
-        // GET: Favourites
-        public async Task<IActionResult> Index()
+        // Get all favourites for the current user
+        public async Task<IActionResult> FavouriteListView()
         {
-            var zenlessZoneZeroContext = _context.Favourites.Include(f => f.Character).Include(f => f.User).Include(f => f.Weapon);
-            return View(await zenlessZoneZeroContext.ToListAsync());
-        }
+            var firebaseUid = "firebase-uid-123abc";
 
-        // GET: Favourites/Details/5
-        public async Task<IActionResult> Details(string id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var favourite = await _context.Favourites
+            var characterFavs = await _context.Favourites
+                .Where(f => f.FirebaseUid == "firebase-uid-123abc" && f.CharacterID != null)
                 .Include(f => f.Character)
-                .Include(f => f.User)
+                .Select(f => new FavouriteListDTO
+                {
+                    CharacterID = f.CharacterID,
+                    Name = f.Character.Name,
+                    ImageUrl = f.Character.ImageUrllink
+                })
+                .ToListAsync();
+
+
+
+            var weaponFavs = await _context.Favourites
+                .Where(f => f.FirebaseUid == firebaseUid && f.WeaponID != null)
                 .Include(f => f.Weapon)
-                .FirstOrDefaultAsync(m => m.FirebaseUid == id);
-            if (favourite == null)
-            {
-                return NotFound();
-            }
+                .Select(f => new FavouriteListDTO
+                {
+                    WeaponID = f.WeaponID,
+                    Name = f.Weapon.Name,
+                    ImageUrl = f.Weapon.ImageUrllink
+                })
+                .ToListAsync();
 
-            return View(favourite);
+
+            var combined = characterFavs.Concat(weaponFavs).ToList();
+            return View(combined);
         }
 
-        // GET: Favourites/Create
-        public IActionResult Create()
-        {
-            ViewData["CharacterID"] = new SelectList(_context.Characters, "CharacterID", "CharacterID");
-            ViewData["FirebaseUid"] = new SelectList(_context.Users, "FirebaseUid", "FirebaseUid");
-            ViewData["WeaponID"] = new SelectList(_context.Weapons, "WeaponID", "WeaponID");
-            return View();
-        }
-
-        // POST: Favourites/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: /Favourites/AddCharacter/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("FavoriteID,FirebaseUid,CharacterID,WeaponID,TimeModified")] Favourite favourite)
+        public async Task<IActionResult> AddCharacter(int id)
         {
-            if (ModelState.IsValid)
+            var exists = await _context.Favourites
+                .AnyAsync(f => f.FirebaseUid == firebaseUid && f.CharacterID == id);
+
+            if (!exists)
             {
-                _context.Add(favourite);
+                var favourite = new Favourite
+                {
+                    FirebaseUid = firebaseUid,
+                    CharacterID = id,
+                    TimeModified = DateTime.UtcNow
+                };
+
+                _context.Favourites.Add(favourite);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
             }
-            ViewData["CharacterID"] = new SelectList(_context.Characters, "CharacterID", "CharacterID", favourite.CharacterID);
-            ViewData["FirebaseUid"] = new SelectList(_context.Users, "FirebaseUid", "FirebaseUid", favourite.FirebaseUid);
-            ViewData["WeaponID"] = new SelectList(_context.Weapons, "WeaponID", "WeaponID", favourite.WeaponID);
-            return View(favourite);
+
+            return Json(new { success = true });
         }
 
-        // GET: Favourites/Edit/5
-        public async Task<IActionResult> Edit(string id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var favourite = await _context.Favourites.FindAsync(id);
-            if (favourite == null)
-            {
-                return NotFound();
-            }
-            ViewData["CharacterID"] = new SelectList(_context.Characters, "CharacterID", "CharacterID", favourite.CharacterID);
-            ViewData["FirebaseUid"] = new SelectList(_context.Users, "FirebaseUid", "FirebaseUid", favourite.FirebaseUid);
-            ViewData["WeaponID"] = new SelectList(_context.Weapons, "WeaponID", "WeaponID", favourite.WeaponID);
-            return View(favourite);
-        }
-
-        // POST: Favourites/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: /Favourites/RemoveCharacter/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("FavoriteID,FirebaseUid,CharacterID,WeaponID,TimeModified")] Favourite favourite)
+        public async Task<IActionResult> RemoveCharacter(int id)
         {
-            if (id != favourite.FirebaseUid)
+            var fav = await _context.Favourites
+                .FirstOrDefaultAsync(f => f.FirebaseUid == firebaseUid && f.CharacterID == id);
+
+            if (fav != null)
             {
-                return NotFound();
+                _context.Favourites.Remove(fav);
+                await _context.SaveChangesAsync();
             }
 
-            if (ModelState.IsValid)
+            return Json(new { success = true });
+        }
+
+        // POST: /Favourites/AddWeapon/5
+        [HttpPost]
+        public async Task<IActionResult> AddWeapon(int id)
+        {
+            var exists = await _context.Favourites
+                .AnyAsync(f => f.FirebaseUid == firebaseUid && f.WeaponID == id);
+
+            if (!exists)
             {
-                try
+                var favourite = new Favourite
                 {
-                    _context.Update(favourite);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!FavouriteExists(favourite.FirebaseUid))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                    FirebaseUid = firebaseUid,
+                    WeaponID = id,
+                    TimeModified = DateTime.UtcNow
+                };
+
+                _context.Favourites.Add(favourite);
+                await _context.SaveChangesAsync();
             }
-            ViewData["CharacterID"] = new SelectList(_context.Characters, "CharacterID", "CharacterID", favourite.CharacterID);
-            ViewData["FirebaseUid"] = new SelectList(_context.Users, "FirebaseUid", "FirebaseUid", favourite.FirebaseUid);
-            ViewData["WeaponID"] = new SelectList(_context.Weapons, "WeaponID", "WeaponID", favourite.WeaponID);
-            return View(favourite);
+
+            return Json(new { success = true });
         }
 
-        // GET: Favourites/Delete/5
-        public async Task<IActionResult> Delete(string id)
+        // POST: /Favourites/RemoveWeapon/5
+        [HttpPost]
+        public async Task<IActionResult> RemoveWeapon(int id)
         {
-            if (id == null)
+            var fav = await _context.Favourites
+                .FirstOrDefaultAsync(f => f.FirebaseUid == firebaseUid && f.WeaponID == id);
+
+            if (fav != null)
             {
-                return NotFound();
+                _context.Favourites.Remove(fav);
+                await _context.SaveChangesAsync();
             }
 
-            var favourite = await _context.Favourites
-                .Include(f => f.Character)
-                .Include(f => f.User)
-                .Include(f => f.Weapon)
-                .FirstOrDefaultAsync(m => m.FirebaseUid == id);
-            if (favourite == null)
-            {
-                return NotFound();
-            }
-
-            return View(favourite);
-        }
-
-        // POST: Favourites/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
-        {
-            var favourite = await _context.Favourites.FindAsync(id);
-            if (favourite != null)
-            {
-                _context.Favourites.Remove(favourite);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool FavouriteExists(string id)
-        {
-            return _context.Favourites.Any(e => e.FirebaseUid == id);
+            return Json(new { success = true });
         }
     }
+
+
 }

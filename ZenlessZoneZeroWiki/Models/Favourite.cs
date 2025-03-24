@@ -6,18 +6,26 @@ namespace ZenlessZoneZeroWiki.Models
 {
     public class Favourite
     {
-        [Key]
-        public int FavoriteID { get; set; }
-        public string FirebaseUid { get; set; }
-        public int CharacterID { get; set; }
-        public int WeaponID { get; set; }
+        public int FavouriteID { get; set; }
 
-        public User User { get; set; }
-        public Character Character { get; set; }
-        public Weapon Weapon { get; set; }
+        [Required]
+        public string FirebaseUid { get; set; }
+
+        public int? CharacterID { get; set; }
+        [ForeignKey("CharacterID")]
+        public Character? Character { get; set; }
+
+        public int? WeaponID { get; set; }
+        [ForeignKey("WeaponID")]
+        public Weapon? Weapon { get; set; }
 
         public DateTime TimeModified { get; set; }
+
+        // Optional user relationship
+        [ForeignKey("FirebaseUid")]
+        public User? User { get; set; }
     }
+
 }
 
 

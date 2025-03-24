@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ZenlessZoneZeroWiki.Data;
 
@@ -11,9 +12,11 @@ using ZenlessZoneZeroWiki.Data;
 namespace ZenlessZoneZeroWiki.Migrations
 {
     [DbContext(typeof(ZenlessZoneZeroContext))]
-    partial class ZenlessZoneZeroContextModelSnapshot : ModelSnapshot
+    [Migration("20250323134650_AddFactionImageUrllinkToCharacter")]
+    partial class AddFactionImageUrllinkToCharacter
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,9 +36,6 @@ namespace ZenlessZoneZeroWiki.Migrations
                     b.Property<int>("Attack")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CharacterType")
-                        .HasColumnType("int");
-
                     b.Property<int>("Defence")
                         .HasColumnType("int");
 
@@ -43,7 +43,7 @@ namespace ZenlessZoneZeroWiki.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int?>("Element")
+                    b.Property<int>("Element")
                         .HasColumnType("int");
 
                     b.Property<string>("FactionimageUrllink")
@@ -61,11 +61,7 @@ namespace ZenlessZoneZeroWiki.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("TypeUrllink")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<int?>("faction")
+                    b.Property<int>("faction")
                         .HasColumnType("int");
 
                     b.HasKey("CharacterID");
@@ -78,13 +74,13 @@ namespace ZenlessZoneZeroWiki.Migrations
                     b.Property<string>("FirebaseUid")
                         .HasColumnType("varchar(255)");
 
-                    b.Property<int?>("CharacterID")
+                    b.Property<int>("CharacterID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("WeaponID")
+                    b.Property<int>("WeaponID")
                         .HasColumnType("int");
 
-                    b.Property<int>("FavouriteID")
+                    b.Property<int>("FavoriteID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("TimeModified")

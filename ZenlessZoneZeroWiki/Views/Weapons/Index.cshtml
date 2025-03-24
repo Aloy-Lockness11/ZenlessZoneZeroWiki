@@ -21,6 +21,12 @@
             <th>
                 @Html.DisplayNameFor(model => model.Type)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ImageUrllink)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -35,6 +41,12 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Type)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ImageUrllink)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.WeaponID">Edit</a> |

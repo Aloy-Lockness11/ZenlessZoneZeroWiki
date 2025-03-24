@@ -7,15 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="Views\Favourites\FavouriteListView.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="Views\Favourites\FavouriteListView.cshtml" />
-    <Compile Include="Views\Weapons\WeaponsDetailsView.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="tailwind.config.js" />
   </ItemGroup>
 
