@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ZenlessZoneZeroWiki.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class finalImplemeents1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -25,11 +25,18 @@ namespace ZenlessZoneZeroWiki.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Description = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    faction = table.Column<int>(type: "int", nullable: false),
+                    faction = table.Column<int>(type: "int", nullable: true),
+                    CharacterType = table.Column<int>(type: "int", nullable: true),
                     HP = table.Column<int>(type: "int", nullable: false),
                     Attack = table.Column<int>(type: "int", nullable: false),
                     Defence = table.Column<int>(type: "int", nullable: false),
-                    Element = table.Column<int>(type: "int", nullable: false)
+                    Element = table.Column<int>(type: "int", nullable: true),
+                    TypeUrllink = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ImageUrllink = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    FactionimageUrllink = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
@@ -41,8 +48,8 @@ namespace ZenlessZoneZeroWiki.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    UserID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    FirebaseUid = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     Username = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Email = table.Column<string>(type: "longtext", nullable: false)
@@ -55,7 +62,7 @@ namespace ZenlessZoneZeroWiki.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.UserID);
+                    table.PrimaryKey("PK_Users", x => x.FirebaseUid);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -65,9 +72,15 @@ namespace ZenlessZoneZeroWiki.Migrations
                 {
                     WeaponID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     AttackDMG = table.Column<int>(type: "int", nullable: false),
                     Defence = table.Column<int>(type: "int", nullable: false),
-                    Type = table.Column<int>(type: "int", nullable: false)
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    Description = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ImageUrllink = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
@@ -79,15 +92,16 @@ namespace ZenlessZoneZeroWiki.Migrations
                 name: "Favourites",
                 columns: table => new
                 {
-                    UserID = table.Column<int>(type: "int", nullable: false),
+                    FirebaseUid = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     CharacterID = table.Column<int>(type: "int", nullable: false),
                     WeaponID = table.Column<int>(type: "int", nullable: false),
-                    FavoriteID = table.Column<int>(type: "int", nullable: false),
+                    FavouriteID = table.Column<int>(type: "int", nullable: false),
                     TimeModified = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Favourites", x => new { x.UserID, x.CharacterID, x.WeaponID });
+                    table.PrimaryKey("PK_Favourites", x => new { x.FirebaseUid, x.CharacterID, x.WeaponID });
                     table.ForeignKey(
                         name: "FK_Favourites_Characters_CharacterID",
                         column: x => x.CharacterID,
@@ -95,10 +109,10 @@ namespace ZenlessZoneZeroWiki.Migrations
                         principalColumn: "CharacterID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Favourites_Users_UserID",
-                        column: x => x.UserID,
+                        name: "FK_Favourites_Users_FirebaseUid",
+                        column: x => x.FirebaseUid,
                         principalTable: "Users",
-                        principalColumn: "UserID",
+                        principalColumn: "FirebaseUid",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Favourites_Weapons_WeaponID",

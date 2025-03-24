@@ -1,0 +1,63 @@
+﻿
+@model ZenlessZoneZeroWiki.Dto.UserRegistrationDTO
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4">Create an Account</h2>
+
+    <form asp-action="Registeration" asp-controller="Account" method="post" class="needs-validation">
+        <div class="mb-3">
+            <label asp-for="Username" class="form-label"></label>
+            <input asp-for="Username" class="form-control" />
+            <span asp-validation-for="Username" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Email" class="form-label"></label>
+            <input asp-for="Email" class="form-control" type="email" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="FirstName" class="form-label"></label>
+            <input asp-for="FirstName" class="form-control" />
+            <span asp-validation-for="FirstName" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="LastName" class="form-label"></label>
+            <input asp-for="LastName" class="form-control" />
+            <span asp-validation-for="LastName" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Password" class="form-label"></label>
+            <input asp-for="Password" class="form-control" type="password" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Register</button>
+    </form>
+
+    <div class="mt-3">
+        <p>Already have an account? <a asp-controller="Account" asp-action="Login">Login here</a>.</p>
+    </div>
+
+    <partial name="_TempDataMessages" />
+</div>
+
+
+@section Scripts {
+    <script>
+        setTimeout(() => {
+            document.querySelectorAll('.alert').forEach(alert => {
+                bootstrap.Alert.getOrCreateInstance(alert).close();
+            });
+        }, 4000);
+    </script>
+
+    <partial name="_ValidationScriptsPartial" />
+}
