@@ -1,5 +1,4 @@
 ﻿@model IEnumerable<ZenlessZoneZeroWiki.Models.Weapon>
-
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Weapon List";
@@ -14,28 +13,14 @@
         {
             <div class="col">
                 <div class="glow-border">
-                    <div class="card weapon-card border-0 glowing-image-container">
-                        <span class="position-absolute"
-                              style="top: 1rem; left: 1rem; font-size: 1.25rem; color: #fff;">
-                            <i class="bi bi-lightning-charge-fill"></i> <!-- Optional: weapon icon -->
+                    <div class="card weapon-card border-0 glowing-image-container position-relative">
+                        <span class="position-absolute" style="top:1rem; right:1rem; font-size:1.25rem; color:gold; z-index:10;">
+                            <i class="bi bi-star-fill"></i>
                         </span>
-
                         <div class="card-body text-white d-flex flex-column align-items-center p-4">
-                            <!-- Weapon Image -->
-                            <img src="@weapon.ImageUrllink"
-                                 alt="@weapon.Name"
-                                 class="img-fluid rounded mb-3"
-                                 style="max-height: 150px; object-fit: cover;" />
-
-                            <!-- Weapon Name -->
+                            <img src="@weapon.ImageUrllink" alt="@weapon.Name" class="img-fluid rounded mb-3" style="max-height:150px; object-fit:cover;" />
                             <h5 class="card-title mb-2">@weapon.Name</h5>
-
-                            <!-- "View More Details" button -->
-                            <a asp-action="WeaponDetailsView"
-                               asp-route-id="@weapon.WeaponID"
-                               class="btn btn-warning btn-sm mt-auto">
-                                View More Details
-                            </a>
+                            <a asp-action="WeaponDetailsView" asp-route-id="@weapon.WeaponID" class="btn btn-warning btn-sm mt-auto">View More Details</a>
                         </div>
                     </div>
                 </div>
