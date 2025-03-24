@@ -20,13 +20,14 @@ namespace ZenlessZoneZeroWiki.Controllers
             _context = context;
         }
 
-        // Get all favourites for the current user
         public async Task<IActionResult> FavouriteListView()
         {
-            var firebaseUid = "firebase-uid-123abc";
+            var firebaseUid = GetFirebaseUid();
+            if (firebaseUid == null)
+                return Unauthorized(); 
 
             var characterFavs = await _context.Favourites
-                .Where(f => f.FirebaseUid == "firebase-uid-123abc" && f.CharacterID != null)
+                .Where(f => f.FirebaseUid == firebaseUid && f.CharacterID != null)
                 .Include(f => f.Character)
                 .Select(f => new FavouriteListDTO
                 {
@@ -35,8 +36,6 @@ namespace ZenlessZoneZeroWiki.Controllers
                     ImageUrl = f.Character.ImageUrllink
                 })
                 .ToListAsync();
-
-
 
             var weaponFavs = await _context.Favourites
                 .Where(f => f.FirebaseUid == firebaseUid && f.WeaponID != null)
@@ -49,15 +48,96 @@ namespace ZenlessZoneZeroWiki.Controllers
                 })
                 .ToListAsync();
 
-
             var combined = characterFavs.Concat(weaponFavs).ToList();
             return View(combined);
         }
+
+        //Toggle feature for the stars thing
+
+        
+        [HttpPost]
+        public async Task<IActionResult> ToggleFavourite(int? characterId, int? weaponId)
+        {
+            var firebaseUid = GetFirebaseUid();
+            if (firebaseUid == null)
+            {
+                TempData["ErrorMessage"] = "You're not logged in.";
+                return Redirect(Request.Headers["Referer"].ToString());
+            }
+
+            if (characterId == null && weaponId == null)
+            {
+                TempData["ErrorMessage"] = "Invalid favorite request.";
+                return Redirect(Request.Headers["Referer"].ToString());
+            }
+
+            try
+            {
+                Favourite existing = null;
+
+                if (characterId != null)
+                {
+                    existing = await _context.Favourites.FirstOrDefaultAsync(f => f.FirebaseUid == firebaseUid && f.CharacterID == characterId);
+                }
+                else if (weaponId != null)
+                {
+                    existing = await _context.Favourites.FirstOrDefaultAsync(f => f.FirebaseUid == firebaseUid && f.WeaponID == weaponId);
+                }
+
+                if (existing != null)
+                {
+                    _context.Favourites.Remove(existing);
+                    TempData["SuccessMessage"] = "Removed from your favourites.";
+                }
+                else
+                {
+                    Favourite fav = null;
+
+                    if (characterId != null)
+                    {
+                        fav = new Favourite
+                        {
+                            FirebaseUid = firebaseUid,
+                            CharacterID = characterId,
+                            WeaponID = null, // explicitly set
+                            TimeModified = DateTime.UtcNow
+                        };
+                    }
+                    else if (weaponId != null)
+                    {
+                        fav = new Favourite
+                        {
+                            FirebaseUid = firebaseUid,
+                            CharacterID = null,
+                            WeaponID = weaponId,
+                            TimeModified = DateTime.UtcNow
+                        };
+                    }
+
+                    _context.Favourites.Add(fav);
+                    TempData["SuccessMessage"] = "Added to your favourites!";
+                }
+
+
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                TempData["ErrorMessage"] = "Failed to update favourites.";
+            }
+
+            return Redirect(Request.Headers["Referer"].ToString());
+        }
+
 
         // POST: /Favourites/AddCharacter/5
         [HttpPost]
         public async Task<IActionResult> AddCharacter(int id)
         {
+            var firebaseUid = GetFirebaseUid();
+            if (firebaseUid == null)
+                return Unauthorized();
+
             var exists = await _context.Favourites
                 .AnyAsync(f => f.FirebaseUid == firebaseUid && f.CharacterID == id);
 
@@ -81,6 +161,10 @@ namespace ZenlessZoneZeroWiki.Controllers
         [HttpPost]
         public async Task<IActionResult> RemoveCharacter(int id)
         {
+            var firebaseUid = GetFirebaseUid();
+            if (firebaseUid == null)
+                return Unauthorized(); // Or return Json(new { success = false, message = "Not authenticated" });
+
             var fav = await _context.Favourites
                 .FirstOrDefaultAsync(f => f.FirebaseUid == firebaseUid && f.CharacterID == id);
 
@@ -93,10 +177,15 @@ namespace ZenlessZoneZeroWiki.Controllers
             return Json(new { success = true });
         }
 
+
         // POST: /Favourites/AddWeapon/5
         [HttpPost]
         public async Task<IActionResult> AddWeapon(int id)
         {
+            var firebaseUid = GetFirebaseUid();
+            if (firebaseUid == null)
+                return Unauthorized();
+
             var exists = await _context.Favourites
                 .AnyAsync(f => f.FirebaseUid == firebaseUid && f.WeaponID == id);
 
@@ -120,6 +209,10 @@ namespace ZenlessZoneZeroWiki.Controllers
         [HttpPost]
         public async Task<IActionResult> RemoveWeapon(int id)
         {
+            var firebaseUid = GetFirebaseUid();
+            if (firebaseUid == null)
+                return Unauthorized();
+
             var fav = await _context.Favourites
                 .FirstOrDefaultAsync(f => f.FirebaseUid == firebaseUid && f.WeaponID == id);
 
@@ -131,6 +224,12 @@ namespace ZenlessZoneZeroWiki.Controllers
 
             return Json(new { success = true });
         }
+
+        private string GetFirebaseUid()
+        {
+            return HttpContext.Session.GetString("FirebaseUid");
+        }
+
     }
 
 

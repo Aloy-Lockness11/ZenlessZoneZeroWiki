@@ -6,12 +6,14 @@ namespace ZenlessZoneZeroWiki.Models
 {
     public class Favourite
     {
+        [Key]
         public int FavouriteID { get; set; }
 
         [Required]
         public string FirebaseUid { get; set; }
 
         public int? CharacterID { get; set; }
+
         [ForeignKey("CharacterID")]
         public Character? Character { get; set; }
 
@@ -23,7 +25,7 @@ namespace ZenlessZoneZeroWiki.Models
 
         // Optional user relationship
         [ForeignKey("FirebaseUid")]
-        public User? User { get; set; }
+        public User User { get; set; }
     }
 
 }

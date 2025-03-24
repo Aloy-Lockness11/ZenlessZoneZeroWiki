@@ -30,6 +30,8 @@ builder.Services.AddServerSideBlazor();
 
 
 var app = builder.Build();
+SeedDatabase.Initialize(app);
+
 // Middleware registration
 app.UseMiddleware<FirebaseAuthMiddleware>();
 

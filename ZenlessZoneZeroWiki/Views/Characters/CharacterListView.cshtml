@@ -2,21 +2,44 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Character List";
+    var isLoggedIn = Context.Session.GetString("AuthToken") != null;
+    var favoritedCharacterIds = ViewBag.FavoritedCharacterIds as List<int> ?? new List<int>();
+
 }
 
 
 <div class="container py-4 lava-lamp">
     <h2 class="text-white">@ViewData["Title"]</h2>
     <hr class="text-white" />
-
+    @await Html.PartialAsync("_TempDataMessages")
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
+        
         @foreach (var character in Model)
         {
+            
+
             <div class="col">
                 <div class="glow-border">
                     <div class="card character-card border-0 glowing-image-container position-relative">
                         <span class="position-absolute" style="top: 1rem; right: 1rem; font-size: 1.25rem; color: gold; z-index: 10;">
-                            <i class="bi bi-star-fill"></i>
+                            @if (isLoggedIn)
+                            {
+                                bool isFav = favoritedCharacterIds.Contains(character.CharacterID);
+
+                                <form asp-controller="Favourites" asp-action="ToggleFavourite" method="post">
+                                    <input type="hidden" name="characterId" value="@character.CharacterID" />
+                                    <button type="submit" class="btn btn-link p-0 m-0 border-0" title="Toggle Favourite">
+                                        <i class="bi @(isFav ? "bi-star-fill" : "bi-star")"></i>
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <a asp-controller="Account" asp-action="Login"
+                                   asp-route-message="Wanna favorite? You gotta log in first, but I bet you already knew that.">
+                                    <i class="bi bi-star" title="Login to favorite"></i>
+                                </a>
+                            }
                         </span>
 
                         <div class="card-body text-white d-flex flex-column align-items-center p-4">

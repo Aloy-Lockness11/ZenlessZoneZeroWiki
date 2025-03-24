@@ -1,14 +1,19 @@
-﻿@if (TempData["SuccessMessage"] != null)
+﻿@{
+    var success = TempData["SuccessMessage"] as string;
+    var error = TempData["ErrorMessage"] as string;
+}
+
+@if (!string.IsNullOrEmpty(success))
 {
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        @TempData["SuccessMessage"]
+    <div class="alert alert-success alert-dismissible fade show shadow rounded-3 px-4 py-3 text-center fw-semibold" role="alert">
+        @success
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
-@if (TempData["ErrorMessage"] != null)
+@if (!string.IsNullOrEmpty(error))
 {
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        @TempData["ErrorMessage"]
+    <div class="alert alert-danger alert-dismissible fade show shadow rounded-3 px-4 py-3 text-center fw-semibold" role="alert">
+        @error
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
