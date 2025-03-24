@@ -3,9 +3,11 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Character List";
 }
+
+
 <div class="container py-4 lava-lamp">
-    <h2>@ViewData["Title"]</h2>
-    <hr />
+    <h2 class="text-white">@ViewData["Title"]</h2>
+    <hr class="text-white" />
 
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
         @foreach (var character in Model)
@@ -16,7 +18,6 @@
                         <span class="position-absolute" style="top: 1rem; right: 1rem; font-size: 1.25rem; color: gold; z-index: 10;">
                             <i class="bi bi-star-fill"></i>
                         </span>
-
 
                         <div class="card-body text-white d-flex flex-column align-items-center p-4">
                             <img src="@character.ImageUrllink" alt="@character.Name" class="img-fluid rounded mb-3" style="max-height:150px; object-fit:cover;" />

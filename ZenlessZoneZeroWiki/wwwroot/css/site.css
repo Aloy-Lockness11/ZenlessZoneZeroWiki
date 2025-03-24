@@ -13,16 +13,16 @@ html, body {
     }
 }
 
+body {
+    margin-bottom: 60px;
+}
+
 .btn:focus,
 .btn:active:focus,
 .btn-link.nav-link:focus,
 .form-control:focus,
 .form-check-input:focus {
     box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-body {
-    margin-bottom: 60px;
 }
 
 .navbar-dark .navbar-brand,
@@ -34,10 +34,7 @@ body {
     background: url("/images/zzz.png") no-repeat center center;
     background-size: cover;
     min-height: 100vh;
-    margin: 0;
-    padding: 0;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
@@ -45,82 +42,166 @@ body {
 }
 
 .hero-overlay {
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.8);
     padding: 2rem;
-    border-radius: 0.5rem;
+    border-radius: .5rem;
     max-width: 800px;
-    margin: 0 auto;
+    margin: auto;
 }
 
 .character-card, .weapon-card {
     position: relative;
     border-radius: 12px;
     background: #1e1e2e;
-    z-index: 1;
     overflow: hidden;
     padding: 2rem;
-    color: white;
-    transition: transform 0.3s ease;
+    transition: transform .3s ease;
+    color: #fff;
 }
 
-    .character-card:hover,
-    .weapon-card:hover {
+    .character-card:hover, .weapon-card:hover {
         transform: translateY(-4px);
     }
 
-    .character-card::before,
-    .weapon-card::before {
+    .character-card::before, .weapon-card::before {
         content: "";
         position: absolute;
-        top: -3px;
-        left: -3px;
-        right: -3px;
-        bottom: -3px;
+        inset: -3px;
         background: linear-gradient(270deg, #ff00cc, #3333ff, #00ffcc, #ffcc00, #ff00cc);
         background-size: 800% 800%;
         animation: snakeGlow 10s linear infinite;
         filter: blur(8px);
         border-radius: 14px;
-        opacity: 0; 
-        transition: opacity 0.3s ease-in-out;
+        opacity: 0;
+        transition: opacity .3s ease-in-out;
         z-index: 0;
     }
 
-    .character-card:hover::before,
-    .weapon-card:hover::before {
+    .character-card:hover::before, .weapon-card:hover::before {
         opacity: 1;
     }
 
-    .character-card::after,
-    .weapon-card::after {
+    .character-card::after, .weapon-card::after {
         content: "";
         position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        border-radius: inherit;
+        inset: 0;
         background: #1e1e2e;
-        z-index: 1;
+        border-radius: inherit;
         margin: 3px;
+        z-index: 1;
     }
 
-    .character-card .card-body,
-    .weapon-card .card-body {
+    .character-card .card-body, .weapon-card .card-body {
         position: relative;
         z-index: 2;
     }
 
 @keyframes snakeGlow {
-    0% {
+    0%,100% {
         background-position: 0% 50%;
     }
 
     50% {
         background-position: 100% 50%;
     }
-
-    100% {
-        background-position: 0% 50%;
-    }
 }
+
+.container.mt-5 {
+    max-width: 532px;
+    margin: 8rem auto;
+    background: #1e1e2e;
+    border-radius: 16px;
+    padding: 2.66rem;
+    box-shadow: 0 0 27px rgba(0,0,0,0.8);
+    position: relative;
+}
+
+    .container.mt-5 h2 {
+        font-size: 2.33rem;
+        margin-bottom: 2.66rem;
+        letter-spacing: .67px;
+    }
+
+.form-control {
+    height: 64px;
+    border-radius: 67px;
+    padding: 0 2rem;
+    font-size: 1.33rem !important;
+    background: rgba(255,255,255,0.05);
+    color: #fff;
+    border: none;
+    transition: background .2s;
+}
+
+    .form-control:focus {
+        background: rgba(255,255,255,0.15);
+    }
+
+.btn-primary {
+    display: block;
+    width: 100%;
+    height: 64px;
+    border-radius: 67px;
+    padding: 0 1.33rem;
+    font-size: 1.33rem !important;
+    font-weight: 600;
+    background: transparent;
+    border: 2px solid #fff;
+    transition: background .3s, color .3s;
+}
+
+    .btn-primary:hover {
+        background: #fff;
+        color: #000;
+    }
+
+.text-danger {
+    font-size: 1.33rem !important;
+}
+
+.container.mt-5 p {
+    font-size: 1.33rem !important;
+}
+
+.container.mt-5 a {
+    font-size: 1.33rem !important;
+    color: #258cfb;
+    text-decoration: none;
+}
+
+    .container.mt-5 a:hover {
+        text-decoration: underline;
+    }
+
+.alert-danger {
+    background: #ff4f4f;
+    border: none;
+    color: #fff;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 1.33rem !important;
+}
+
+body {
+    background: url("/images/loginregisterbg.jpg") no-repeat center center fixed !important;
+    background-size: cover !important;
+}
+
+.container.lava-lamp {
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: .5rem;
+    padding: 2rem;
+    margin-top: 2rem;
+
+
+.details-card {
+    background: rgba(30, 30, 46, 0.7); 
+    backdrop-filter: blur(5px); 
+    border-radius: 12px;
+    color: #fff;
+}
+
+.details-card .progress {
+    background: rgba(255,255,255,0.2);
+}
+

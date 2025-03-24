@@ -24,5 +24,10 @@ namespace ZenlessZoneZeroWiki.Dto
         [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters to 100 characters in Length.")]
         [DataType(DataType.Password)]
         public string Password { get; set; }
+
+        [Required]
+        [Compare("Password", ErrorMessage = "Passwords do not match")]
+        public string ConfirmPassword { get; set; }
+
     }
 }
