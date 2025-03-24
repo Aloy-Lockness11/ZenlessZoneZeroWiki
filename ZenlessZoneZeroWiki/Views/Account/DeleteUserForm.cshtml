@@ -1,0 +1,36 @@
+﻿@model ZenlessZoneZeroWiki.Dto.UserDeleteDTO;
+@{
+    ViewData["Title"] = "Delete Account";
+}
+
+<h2>Delete Account</h2>
+
+
+
+<div class="container mt-5">
+    <h2 class="mb-4">Delete Account</h2>
+    <form asp-action="DeleteUser" method="post" class="needs-validation">
+        <div class="mb-3">
+            <label class="form-label">Type "yes" to confirm account deletion:</label>
+            <input asp-for="Confirmation" class="form-control" />
+            <span asp-validation-for="Confirmation" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-danger">Delete My Account</button>
+    </form>
+
+    <partial name="_TempDataMessages" />
+</div>
+@section Scripts {
+    <script>
+        setTimeout(() => {
+            document.querySelectorAll('.alert').forEach(alert => {
+                bootstrap.Alert.getOrCreateInstance(alert).close();
+            });
+        }, 4000);
+    </script>
+}
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

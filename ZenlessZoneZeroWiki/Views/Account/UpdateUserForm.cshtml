@@ -1,0 +1,60 @@
+﻿@model ZenlessZoneZeroWiki.Dto.UserUpdateDetailsDTO
+
+
+
+<div class="container mt-5">
+    <h2 class="mb-4">Update Account Details</h2>
+
+    <form asp-action="UpdateUser" method="post" class="needs-validation">
+        @Html.AntiForgeryToken()
+
+        <input type="hidden" asp-for="FirebaseUid" />
+
+        <div class="mb-3 form-group">
+            <label asp-for="Username"></label>
+            <input asp-for="Username" class="form-control" />
+            <span asp-validation-for="Username" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3 form-group">
+            <label asp-for="FirstName"></label>
+            <input asp-for="FirstName" class="form-control" />
+            <span asp-validation-for="FirstName" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3 form-group">
+            <label asp-for="LastName"></label>
+            <input asp-for="LastName" class="form-control" />
+            <span asp-validation-for="LastName" class="text-danger"></span>
+        </div>
+
+
+        <div class="mb-3 form-group">
+            <label>Email (readonly)</label>
+            <input class="form-control" value="@Model.Email" readonly />
+        </div>
+
+        <div class="mb-3 form-group">
+            <label>Account Created On</label>
+            <input class="form-control" value="@Model.TimeCreated.ToString("yyyy-MM-dd HH:mm:ss")" readonly />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Update</button>
+    </form>
+
+    <partial name="_TempDataMessages" />
+</div>
+
+
+@section Scripts {
+    <script>
+        setTimeout(() => {
+            document.querySelectorAll('.alert').forEach(alert => {
+                bootstrap.Alert.getOrCreateInstance(alert).close();
+            });
+        }, 4000);
+    </script>
+
+
+    <partial name="_ValidationScriptsPartial" />
+}

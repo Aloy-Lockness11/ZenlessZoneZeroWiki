@@ -1,20 +1,20 @@
 
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Pomelo.EntityFrameworkCore.MySql;
 using ZenlessZoneZeroWiki.Data;
 using FirebaseAdmin;
 using ZenlessZoneZeroWiki.Middleware;
+using Google.Apis.Auth.OAuth2;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add Session to store vital information
+builder.Services.AddSession();
 
 // Add Firebase services
 FirebaseApp.Create(new AppOptions()
 {
-    Credential = Google.Apis.Auth.OAuth2.GoogleCredential.FromFile("zenlesszonezerowikiauth-firebase-adminsdk-fbsvc-8ea1214dac.json")
+    Credential = GoogleCredential.FromFile("zenlesszonezerowikiauth-firebase-adminsdk-fbsvc-0013afcb7c.json")
 });
 
 // Get connection string for database
@@ -44,6 +44,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+app.UseSession();
 app.UseAuthorization();
 
 

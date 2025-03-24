@@ -12,8 +12,8 @@ using ZenlessZoneZeroWiki.Data;
 namespace ZenlessZoneZeroWiki.Migrations
 {
     [DbContext(typeof(ZenlessZoneZeroContext))]
-    [Migration("20250323145502_AddTypeUrllinkToCharacter")]
-    partial class AddTypeUrllinkToCharacter
+    [Migration("20250324064145_finalImplemeents1")]
+    partial class finalImplemeents1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -36,6 +36,9 @@ namespace ZenlessZoneZeroWiki.Migrations
                     b.Property<int>("Attack")
                         .HasColumnType("int");
 
+                    b.Property<int?>("CharacterType")
+                        .HasColumnType("int");
+
                     b.Property<int>("Defence")
                         .HasColumnType("int");
 
@@ -43,7 +46,7 @@ namespace ZenlessZoneZeroWiki.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("Element")
+                    b.Property<int?>("Element")
                         .HasColumnType("int");
 
                     b.Property<string>("FactionimageUrllink")
@@ -65,7 +68,7 @@ namespace ZenlessZoneZeroWiki.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("faction")
+                    b.Property<int?>("faction")
                         .HasColumnType("int");
 
                     b.HasKey("CharacterID");
@@ -78,13 +81,13 @@ namespace ZenlessZoneZeroWiki.Migrations
                     b.Property<string>("FirebaseUid")
                         .HasColumnType("varchar(255)");
 
-                    b.Property<int>("CharacterID")
+                    b.Property<int?>("CharacterID")
                         .HasColumnType("int");
 
-                    b.Property<int>("WeaponID")
+                    b.Property<int?>("WeaponID")
                         .HasColumnType("int");
 
-                    b.Property<int>("FavoriteID")
+                    b.Property<int>("FavouriteID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("TimeModified")

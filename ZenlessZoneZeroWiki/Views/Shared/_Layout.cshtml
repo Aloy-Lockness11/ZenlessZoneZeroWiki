@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var isLoggedIn = Context.Session.GetString("AuthToken") != null;
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -28,16 +31,44 @@
                     <li class="nav-item">
                         <a class="nav-link" href="@Url.Action("WeaponListView", "Weapons")">Weapons</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="@Url.Action("FavouriteListView", "Favourites")">Favourites</a>
-                    </li>
+                    @if (isLoggedIn)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("FavouriteListView", "Favourites")">Favourites</a>
+                        </li>
+                    }
                 </ul>
 
                 <!-- Right-Side Buttons -->
                 <div class="d-flex gap-2">
-                    <a class="btn btn-warning" href="@Url.Action("Login", "Account")" role="button">Login</a>
-                    <a class="btn btn-warning" href="@Url.Action("Logout", "Account")" role="button">Logout</a>
-                    <a class="btn btn-warning" href="@Url.Action("Registration", "Account")" role="button">Register</a>
+                    @if (!isLoggedIn)
+                    {
+                        <a class="btn btn-warning" href="@Url.Action("Login", "Account")" role="button">Login</a>
+                        <a class="btn btn-warning" href="@Url.Action("Registeration", "Account")" role="button">Register</a>
+                    }
+                    else
+                    {
+                        <div class="dropdown">
+                            <a class="btn btn-warning dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-gear-fill"></i> Account Settings
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark">
+                                <li>
+                                    <a class="dropdown-item" href="@Url.Action("UpdateUserForm", "Account")"> Update Account Details </a>
+                                </li>
+                                <li><hr class="dropdown-divider" /></li>
+                                <li>
+                                    <a class="dropdown-item text-danger" href="@Url.Action("DeleteUserForm", "Account")">Delete Account</a>
+                                </li>
+                                <li>
+                                    <form asp-controller="Account" asp-action="Logout" method="post">
+                                        <button type="submit" class="dropdown-item text-danger">Logout</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    }
+
                     <a class="btn btn-warning" href="https://zenless.hoyoverse.com/en-us/main" role="button" target="_blank">Download Now</a>
                 </div>
             </div>
@@ -59,6 +90,8 @@
     <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
     @RenderSection("Scripts", required: false)
 </body>
 </html>
