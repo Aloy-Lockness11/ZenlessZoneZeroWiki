@@ -4,13 +4,14 @@
     ViewData["Title"] = "Weapon Details";
 }
 
-<div class="container py-4">
-    <div class="card border-0" style="background: linear-gradient(90deg,#1E1E2E,#292A3C); border-radius:12px; position:relative;">
-        <span class="position-absolute" style="top:1rem; right:1rem; font-size:1.5rem; color:gold; z-index:10;">
+<div class="hero-section" style="position: relative;">
+    <div class="hero-overlay container py-4" style="position: relative;">
+        <span class="position-absolute"
+              style="top:1rem; right:1rem; font-size:1.5rem; color:gold; z-index:9999;">
             <i class="bi bi-star-fill"></i>
         </span>
 
-        <div class="card-body text-white p-4">
+        <div class="text-white p-4">
             <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-3" style="padding-right:3rem;">
                 <h2 class="mb-0">@Model.Name</h2>
                 <div>
@@ -21,25 +22,30 @@
 
             <div class="row">
                 <div class="col-md-4 text-center mb-3">
-                    <img src="@Model.ImageUrllink" alt="@Model.Name" class="img-fluid rounded" style="max-height:220px; object-fit:cover;" />
+                    <img src="@Model.ImageUrllink" alt="@Model.Name"
+                         class="img-fluid rounded"
+                         style="max-height:220px; object-fit:cover;" />
                 </div>
                 <div class="col-md-8">
                     <div class="row g-3">
                         <div class="col-sm-6">
                             <label class="fw-bold">Attack DMG</label>
                             <div class="progress" style="height:6px;">
-                                <div class="progress-bar bg-danger" style="width:@(Model.AttackDMG/100)%"></div>
+                                <div class="progress-bar bg-danger"
+                                     style="width:@(Model.AttackDMG/100)%"></div>
                             </div>
                             <span class="small">@Model.AttackDMG</span>
                         </div>
                         <div class="col-sm-6">
                             <label class="fw-bold">Defence</label>
                             <div class="progress" style="height:6px;">
-                                <div class="progress-bar bg-primary" style="width:@(Model.Defence/100)%"></div>
+                                <div class="progress-bar bg-primary"
+                                     style="width:@(Model.Defence/100)%"></div>
                             </div>
                             <span class="small">@Model.Defence</span>
                         </div>
                     </div>
+
                     <div class="mt-4">
                         <label class="fw-bold">Description</label>
                         <p>@Model.Description</p>
