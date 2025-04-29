@@ -23,6 +23,10 @@ namespace ZenlessZoneZeroWiki.Models
 
         public DateTime TimeCreated { get; set; } = DateTime.UtcNow;
 
+        [MaxLength(64)]
+        public string? ApiKey { get; set; }
+        public DateTime? ApiKeyCreated { get; set; }
+
         public ICollection<Favourite> Favourites { get; set; } = new List<Favourite>();  // Initialize empty list
     }
 

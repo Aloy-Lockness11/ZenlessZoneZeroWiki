@@ -1,60 +1,58 @@
 ﻿@model ZenlessZoneZeroWiki.Dto.UserUpdateDetailsDTO
 
+<div class="container lava-lamp">
+    <h2 class="mb-4 text-center">Update Account Details</h2>
 
-
-<div class="container mt-5">
-    <h2 class="mb-4">Update Account Details</h2>
-
-    <form asp-action="UpdateUser" method="post" class="needs-validation">
+    <form asp-action="UpdateUser" method="post" class="needs-validation" novalidate>
         @Html.AntiForgeryToken()
-
         <input type="hidden" asp-for="FirebaseUid" />
 
-        <div class="mb-3 form-group">
-            <label asp-for="Username"></label>
+        <div class="mb-3">
+            <label asp-for="Username" class="form-label"></label>
             <input asp-for="Username" class="form-control" />
             <span asp-validation-for="Username" class="text-danger"></span>
         </div>
 
-        <div class="mb-3 form-group">
-            <label asp-for="FirstName"></label>
+        <div class="mb-3">
+            <label asp-for="FirstName" class="form-label"></label>
             <input asp-for="FirstName" class="form-control" />
             <span asp-validation-for="FirstName" class="text-danger"></span>
         </div>
 
-        <div class="mb-3 form-group">
-            <label asp-for="LastName"></label>
+        <div class="mb-3">
+            <label asp-for="LastName" class="form-label"></label>
             <input asp-for="LastName" class="form-control" />
             <span asp-validation-for="LastName" class="text-danger"></span>
         </div>
 
-
-        <div class="mb-3 form-group">
-            <label>Email (readonly)</label>
-            <input class="form-control" value="@Model.Email" readonly />
+        <div class="mb-3">
+            <label class="form-label">Email (readonly)</label>
+            <input class="form-control"
+                   value="@Model.Email"
+                   readonly />
         </div>
 
-        <div class="mb-3 form-group">
-            <label>Account Created On</label>
-            <input class="form-control" value="@Model.TimeCreated.ToString("yyyy-MM-dd HH:mm:ss")" readonly />
+        <div class="mb-3">
+            <label class="form-label">Account Created On</label>
+            <input class="form-control"
+                   value="@Model.TimeCreated.ToString("yyyy-MM-dd HH:mm:ss")"
+                   readonly />
         </div>
 
-        <button type="submit" class="btn btn-primary">Update</button>
+        <button type="submit" class="btn btn-primary w-100">Update</button>
     </form>
 
     <partial name="_TempDataMessages" />
 </div>
 
-
 @section Scripts {
     <script>
+        // auto-close alerts
         setTimeout(() => {
-            document.querySelectorAll('.alert').forEach(alert => {
-                bootstrap.Alert.getOrCreateInstance(alert).close();
-            });
+          document.querySelectorAll('.alert')
+            .forEach(a => bootstrap.Alert.getOrCreateInstance(a).close());
         }, 4000);
     </script>
-
 
     <partial name="_ValidationScriptsPartial" />
 }
