@@ -1,3 +1,4 @@
+/* Reset & base */
 html, body {
     margin: 0;
     padding: 0;
@@ -17,6 +18,7 @@ body {
     margin-bottom: 60px;
 }
 
+/* Focus outlines */
 .btn:focus,
 .btn:active:focus,
 .btn-link.nav-link:focus,
@@ -25,13 +27,15 @@ body {
     box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
+/* Navbar text */
 .navbar-dark .navbar-brand,
 .navbar-dark .nav-link {
     color: #fff;
 }
 
+/* Hero section with 10% dark overlay */
 .hero-section {
-    background: url("/images/zzz.png") no-repeat center center;
+    background: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), url("/images/zzz.png") no-repeat center center;
     background-size: cover;
     min-height: 100vh;
     display: flex;
@@ -49,7 +53,9 @@ body {
     margin: auto;
 }
 
-.character-card, .weapon-card {
+/* Character & weapon cards */
+.character-card,
+.weapon-card {
     position: relative;
     border-radius: 12px;
     background: #1e1e2e;
@@ -59,11 +65,13 @@ body {
     color: #fff;
 }
 
-    .character-card:hover, .weapon-card:hover {
+    .character-card:hover,
+    .weapon-card:hover {
         transform: translateY(-4px);
     }
 
-    .character-card::before, .weapon-card::before {
+    .character-card::before,
+    .weapon-card::before {
         content: "";
         position: absolute;
         inset: -3px;
@@ -77,11 +85,13 @@ body {
         z-index: 0;
     }
 
-    .character-card:hover::before, .weapon-card:hover::before {
+    .character-card:hover::before,
+    .weapon-card:hover::before {
         opacity: 1;
     }
 
-    .character-card::after, .weapon-card::after {
+    .character-card::after,
+    .weapon-card::after {
         content: "";
         position: absolute;
         inset: 0;
@@ -91,13 +101,14 @@ body {
         z-index: 1;
     }
 
-    .character-card .card-body, .weapon-card .card-body {
+    .character-card .card-body,
+    .weapon-card .card-body {
         position: relative;
         z-index: 2;
     }
 
 @keyframes snakeGlow {
-    0%,100% {
+    0%, 100% {
         background-position: 0% 50%;
     }
 
@@ -106,37 +117,41 @@ body {
     }
 }
 
+/* Update / Login container styling */
 .container.mt-5 {
     max-width: 532px;
-    margin: 8rem auto;
-    background: #1e1e2e;
-    border-radius: 16px;
-    padding: 2.66rem;
-    box-shadow: 0 0 27px rgba(0,0,0,0.8);
+    margin: 4rem auto;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 0.5rem;
+    padding: 2.5rem;
+    box-shadow: 0 0 25px rgba(0,0,0,0.8);
     position: relative;
 }
 
-    .container.mt-5 h2 {
-        font-size: 2.33rem;
-        margin-bottom: 2.66rem;
-        letter-spacing: .67px;
+    .container.mt-5 h2,
+    .container.mt-5 label,
+    .container.mt-5 .form-label {
+        color: #fff !important;
     }
 
-.form-control {
-    height: 64px;
-    border-radius: 67px;
-    padding: 0 2rem;
-    font-size: 1.33rem !important;
-    background: rgba(255,255,255,0.05);
-    color: #fff;
-    border: none;
-    transition: background .2s;
-}
-
-    .form-control:focus {
-        background: rgba(255,255,255,0.15);
+    /* Inputs contrast inside .container.mt-5 */
+    .container.mt-5 .form-control {
+        background: rgba(255,255,255,0.1) !important;
+        border: 1px solid rgba(255,255,255,0.3) !important;
+        color: #fff !important;
     }
 
+        .container.mt-5 .form-control:focus {
+            background: rgba(255,255,255,0.15) !important;
+        }
+        /* Make readonly inputs match the editable ones for better visibility */
+        .container.mt-5 .form-control[readonly] {
+            background: rgba(255,255,255,0.1) !important;
+            border: 1px solid rgba(255,255,255,0.3) !important;
+            color: #fff !important;
+        }
+
+/* Primary button full width */
 .btn-primary {
     display: block;
     width: 100%;
@@ -155,16 +170,17 @@ body {
         color: #000;
     }
 
+/* Misc */
 .text-danger {
     font-size: 1.33rem !important;
 }
 
-.container.mt-5 p {
+.container.mt-5 p,
+.container.mt-5 a {
     font-size: 1.33rem !important;
 }
 
 .container.mt-5 a {
-    font-size: 1.33rem !important;
     color: #258cfb;
     text-decoration: none;
 }
@@ -182,26 +198,20 @@ body {
     font-size: 1.33rem !important;
 }
 
+/* Login/register background darkened by 30% */
 body {
-    background: url("/images/loginregisterbg.jpg") no-repeat center center fixed !important;
+    background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url("/images/loginregisterbg.jpg") no-repeat center center fixed !important;
     background-size: cover !important;
 }
 
-.container.lava-lamp {
-    background-color: rgba(0, 0, 0, 0.6);
-    border-radius: .5rem;
-    padding: 2rem;
-    margin-top: 2rem;
-
-
+/* Details card */
 .details-card {
-    background: rgba(30, 30, 46, 0.7); 
-    backdrop-filter: blur(5px); 
+    background: rgba(30, 30, 46, 0.7);
+    backdrop-filter: blur(5px);
     border-radius: 12px;
     color: #fff;
 }
 
-.details-card .progress {
-    background: rgba(255,255,255,0.2);
-}
-
+    .details-card .progress {
+        background: rgba(255,255,255,0.2);
+    }

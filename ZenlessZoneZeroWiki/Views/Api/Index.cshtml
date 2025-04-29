@@ -1,0 +1,109 @@
+﻿@model ZenlessZoneZeroWiki.Models.User
+
+@{
+    /* ───────── PAGE SET-UP ───────── */
+    ViewData["Title"] = "REST API";
+
+    bool isLoggedIn = Context.Session.GetString("AuthToken") != null;
+
+    string? freshKey = TempData["Key"] as string;
+
+    DateTime? keyDt = ViewBag.ApiKeyDate as DateTime?;
+}
+
+
+<div class="container py-4 lava-lamp">
+
+    <!-- PAGE TITLE -->
+    <h2 class="text-white mb-3">@ViewData["Title"]</h2>
+
+    <!-- ───────── HEADER ROW (status + button) ───────── -->
+    <div class="d-flex flex-column flex-md-row align-items-md-center
+                justify-content-between gap-3 mb-4">
+
+        <!-- LEFT SIDE  ─ status / dates -->
+        <div class="flex-grow-1 text-white">
+
+            @* fresh key just minted? show big banner below instead *@
+            @if (string.IsNullOrEmpty(freshKey))
+            {
+                if (isLoggedIn && keyDt is not null)
+                {
+                    <span>
+                        Current key last generated on
+                        <strong>@keyDt?.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss")</strong>
+                    </span>
+                }
+                else if (isLoggedIn)
+                {
+                    <span>You don’t have an API key yet.</span>
+                }
+                else
+                {
+                    <span>
+                        <a asp-controller="Account" asp-action="Login">Log in</a>
+                        to create an API key.
+                    </span>
+                }
+            }
+        </div>
+
+        <!-- RIGHT SIDE  ─ (re)generate key -->
+        @if (isLoggedIn)
+        {
+            <form asp-controller="Account"
+                  asp-action="RegenerateKey"
+                  method="post"
+                  class="ms-md-3">
+                @Html.AntiForgeryToken()
+                <button class="btn btn-warning">
+                    @(freshKey == null ? "Generate API Key" : "Generate Another Key")
+                </button>
+            </form>
+        }
+    </div>
+    <!-- ───────── END HEADER ROW ───────── -->
+    @if (!string.IsNullOrEmpty(freshKey))
+    {
+        <div class="card bg-dark text-light mb-4 shadow-sm">
+            <div class="card-body p-3">
+                <span class="me-2">
+                    <strong class="text-white">Your new key</strong>
+                </span>
+                <code class="text-warning">@freshKey</code>
+            </div>
+        </div>
+    }
+
+    <hr class="text-white" />
+
+    <!-- ───────── ENDPOINT DOCUMENTATION (keep whatever you already had) ───────── -->
+    <h3 class="text-white mb-3">Endpoints</h3>
+
+    <!-- List all characters -->
+    <div class="card bg-dark text-white mb-4">
+        <div class="card-body">
+            <h4 class="card-title">List all characters</h4>
+            <p class="mb-1">
+                <kbd>GET {{baseUrl}}/api/characters</kbd>
+            </p>
+            <p class="mb-1">
+                Use <code>?fields=</code> to choose properties:
+            </p>
+            <p>
+                <kbd>GET /api/characters?fields=name,hp,element</kbd>
+            </p>
+        </div>
+    </div>
+
+    <!-- List all weapons -->
+    <div class="card bg-dark text-white mb-4">
+        <div class="card-body">
+            <h4 class="card-title">List all weapons</h4>
+            <p class="mb-1">
+                <kbd>GET {{baseUrl}}/api/weapons</kbd>
+            </p>
+        </div>
+    </div>
+
+</div>
