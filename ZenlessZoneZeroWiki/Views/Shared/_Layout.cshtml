@@ -5,36 +5,72 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>@ViewData["Title"] ZenlessZoneZeroWiki</title>
+    <title>@ViewData["Title"] – ZenlessZoneZeroWiki</title>
     <link rel="icon" href="~/zzzicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
     <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
     <!-- NAVBAR -->
     <nav class="navbar navbar-expand-lg navbar-dark sticky-top shadow" style="background-color: #000;">
         <div class="container-fluid">
             <!-- BRAND/LOGO -->
-            <a class="navbar-brand" href="#">
+            <a class="navbar-brand" asp-controller="Home" asp-action="Index">
                 <img src="~/images/zzzlogo.png" alt="Zenless Zone Zero" style="height: 40px;" />
             </a>
 
             <!-- Collapsible Navbar Content -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
             <div class="collapse navbar-collapse" id="mainNavbar">
                 <ul class="navbar-nav mx-auto mb-2 mb-lg-0 justify-content-center">
                     <li class="nav-item">
-                        <a class="nav-link" href="@Url.Action("CharacterListView", "Characters")">Characters</a>
+                        <a class="nav-link"
+                           href="@Url.Action("CharacterListView", "Characters")">Characters</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="@Url.Action("WeaponListView", "Weapons")">Weapons</a>
+                        <a class="nav-link"
+                           href="@Url.Action("WeaponListView", "Weapons")">Weapons</a>
                     </li>
+
+                    <!-- Compare Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="compareDropdown" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            Compare
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="compareDropdown">
+                            <li>
+                                <a class="dropdown-item"
+                                   asp-controller="Characters" asp-action="Compare">
+                                    Compare Characters
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item"
+                                   asp-controller="Characters" asp-action="CompareWithWeapon">
+                                    Compare Characters + Weapon
+                                </a>
+                            </li>
+
+                        </ul>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           href="@Url.Action("Index", "Api")">API</a>
+                    </li>
+
                     @if (isLoggedIn)
                     {
                         <li class="nav-item">
-                            <a class="nav-link" href="@Url.Action("FavouriteListView", "Favourites")">Favourites</a>
+                            <a class="nav-link"
+                               href="@Url.Action("FavouriteListView", "Favourites")">Favourites</a>
                         </li>
                     }
                 </ul>
@@ -43,47 +79,82 @@
                 <div class="d-flex gap-2">
                     @if (!isLoggedIn)
                     {
-                        <a class="btn btn-warning" href="@Url.Action("Login", "Account")" role="button">Login</a>
-                        <a class="btn btn-warning" href="@Url.Action("Registeration", "Account")" role="button">Register</a>
+                        <a class="btn btn-warning"
+                           href="@Url.Action("Login", "Account")"
+                           role="button">Login</a>
+                        <a class="btn btn-warning"
+                           href="@Url.Action("Registeration", "Account")"
+                           role="button">Register</a>
                     }
                     else
                     {
                         <div class="dropdown">
-                            <a class="btn btn-warning dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <a class="btn btn-warning dropdown-toggle"
+                               href="#"
+                               role="button"
+                               data-bs-toggle="dropdown"
+                               aria-expanded="false">
                                 <i class="bi bi-gear-fill"></i> Account Settings
                             </a>
+
                             <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark">
                                 <li>
-                                    <a class="dropdown-item" href="@Url.Action("UpdateUserForm", "Account")"> Update Account Details </a>
+                                    <form asp-controller="Account"
+                                          asp-action="RegenerateKey"
+                                          method="post">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="dropdown-item">
+                                            Regenerate API Key
+                                        </button>
+                                    </form>
                                 </li>
                                 <li><hr class="dropdown-divider" /></li>
                                 <li>
-                                    <a class="dropdown-item text-danger" href="@Url.Action("DeleteUserForm", "Account")">Delete Account</a>
+                                    <a class="dropdown-item"
+                                       href="@Url.Action("UpdateUserForm", "Account")">
+                                        Update Account Details
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider" /></li>
+                                <li>
+                                    <a class="dropdown-item text-danger"
+                                       href="@Url.Action("DeleteUserForm", "Account")">
+                                        Delete Account
+                                    </a>
                                 </li>
                                 <li>
-                                    <form asp-controller="Account" asp-action="Logout" method="post">
-                                        <button type="submit" class="dropdown-item text-danger">Logout</button>
+                                    <form asp-controller="Account"
+                                          asp-action="Logout"
+                                          method="post">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit"
+                                                class="dropdown-item text-danger">
+                                            Logout
+                                        </button>
                                     </form>
                                 </li>
                             </ul>
                         </div>
                     }
 
-                    <a class="btn btn-warning" href="https://zenless.hoyoverse.com/en-us/main" role="button" target="_blank">Download Now</a>
+                    <a class="btn btn-warning"
+                       href="https://zenless.hoyoverse.com/en-us/main"
+                       role="button"
+                       target="_blank">Download Now</a>
                 </div>
             </div>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <main>
+    <main class="flex-fill">
         @RenderBody()
     </main>
 
     <!-- FOOTER -->
-    <footer class="footer py-3 text-center shadow" style="background-color: #000;">
+    <footer class="footer py-3 text-center shadow mt-auto" style="background-color: #000;">
         <div class="container">
-            <span class="text-light">&copy; 2025 - ZenlessZoneZeroWiki</span>
+            <span class="text-light">&copy; 2025 – ZenlessZoneZeroWiki</span>
         </div>
     </footer>
 

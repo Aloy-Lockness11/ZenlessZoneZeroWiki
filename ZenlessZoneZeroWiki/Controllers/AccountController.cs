@@ -1,241 +1,206 @@
-﻿using System.Diagnostics;
-using FirebaseAdmin.Auth;
+﻿using FirebaseAdmin.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ZenlessZoneZeroWiki.Data;
-using ZenlessZoneZeroWiki.Models;
 using ZenlessZoneZeroWiki.Dto;
+using ZenlessZoneZeroWiki.Models;       
 
+namespace ZenlessZoneZeroWiki.Controllers;
 
-namespace ZenlessZoneZeroWiki.Controllers
+[Route("[controller]/[action]")]
+public class AccountController : Controller
 {
-    [Route("[controller]/[action]")]
-    public class AccountController : Controller
+    private readonly ZenlessZoneZeroContext _db;
+    public AccountController(ZenlessZoneZeroContext db) => _db = db;
+
+    /*──────────────────────── LOGIN ───────────────────────*/
+
+    [HttpGet("Login")]
+    public IActionResult Login(string? message = null)
     {
-        private readonly ZenlessZoneZeroContext _context;
+        if (!string.IsNullOrEmpty(message))
+            TempData["ErrorMessage"] = message;
+        return View();
+    }
 
-        public AccountController(ZenlessZoneZeroContext context)
+    [HttpPost("Login")]
+    public async Task<IActionResult> Login([FromForm] UserLoginDTO m)
+    {
+        if (!ModelState.IsValid) return View("Login", m);
+
+        try
         {
-            _context = context;
+            var rec = await FirebaseAuth.DefaultInstance.GetUserByEmailAsync(m.Email);
+            var tok = await FirebaseAuth.DefaultInstance.CreateCustomTokenAsync(rec.Uid);
+
+            if (await _db.Users.FirstOrDefaultAsync(u => u.Email == m.Email) is null)
+            {
+                TempData["ErrorMessage"] = "User not registered.";
+                return View("Login", m);
+            }
+
+            HttpContext.Session.SetString("AuthToken", tok);
+            HttpContext.Session.SetString("FirebaseUid", rec.Uid);
+            return RedirectToAction("Index", "Home");
         }
-
-        [HttpGet("Login")]
-        public IActionResult Login(string message = null)
+        catch (FirebaseAuthException)
         {
-            if (!string.IsNullOrEmpty(message))
-                TempData["ErrorMessage"] = message;
-
-            return View();
+            TempData["ErrorMessage"] = "Invalid email or password.";
+            return View("Login", m);
         }
+    }
 
-        [HttpPost("Login")]
-        public async Task<IActionResult> Login([FromForm] UserLoginDTO model)
+    [HttpPost("Logout")]
+    public IActionResult Logout()
+    {
+        HttpContext.Session.Clear();
+        TempData["SuccessMessage"] = "You’ve been logged out.";
+        return RedirectToAction(nameof(Login));
+    }
+
+    /*───────────────── REGISTRATION (+ first API-key) ───────────────*/
+
+    [HttpGet("Registeration")]
+    public IActionResult Registeration() => View();
+
+    [HttpPost("Registeration")]
+    public async Task<IActionResult> Registeration([FromForm] UserRegistrationDTO m)
+    {
+        if (!ModelState.IsValid) return View(m);
+
+        try
         {
-            if (!ModelState.IsValid)
+            var fb = await FirebaseAuth.DefaultInstance.CreateUserAsync(new UserRecordArgs
             {
-                TempData["ErrorMessage"] = "Please check your credentials and try again.";
-                return View("Login", model);
-            }
+                Email = m.Email,
+                Password = m.Password,
+                DisplayName = m.Username
+            });
 
-            try
+            // mint first key
+            var (plain, hashed) = ApiKeyUtil.NewKey();
+
+            var user = new User
             {
-                var userRecord = await FirebaseAuth.DefaultInstance.GetUserByEmailAsync(model.Email);
-                string customToken = await FirebaseAuth.DefaultInstance.CreateCustomTokenAsync(userRecord.Uid);
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
-
-                if (user == null)
-                {
-                    TempData["ErrorMessage"] = "User not registered.";
-                    return View("Login", model);
-                }
-
-                HttpContext.Session.SetString("AuthToken", customToken);
-                HttpContext.Session.SetString("FirebaseUid", userRecord.Uid);
-
-                return RedirectToAction("Index", "Home");
-            }
-            catch (FirebaseAuthException)
-            {
-                TempData["ErrorMessage"] = "Invalid email or password.";
-                return View("Login", model);
-            }
-        }
-
-        [HttpPost("Logout")]
-        public IActionResult Logout()
-        {
-            HttpContext.Session.Clear();
-            TempData["SuccessMessage"] = "You’ve been logged out.";
-            return RedirectToAction("Login", "Account");
-        }
-
-
-        [HttpGet("Registeration")]
-        public IActionResult Registeration()
-        {
-            return View();
-        }
-
-        [HttpPost("Registeration")]
-        public async Task<IActionResult> Registeration([FromForm] UserRegistrationDTO model)
-        {
-            if (!ModelState.IsValid)
-            {
-                TempData["ErrorMessage"] = "Please fill all required fields correctly.";
-                return View(model);
-            }
-
-            try
-            {
-                var args = new UserRecordArgs
-                {
-                    Email = model.Email,
-                    Password = model.Password,
-                    DisplayName = model.Username,
-                    EmailVerified = false,
-                    Disabled = false
-                };
-
-                var firebaseUser = await FirebaseAuth.DefaultInstance.CreateUserAsync(args);
-
-                var newUser = new User
-                {
-                    FirebaseUid = firebaseUser.Uid,
-                    Username = model.Username,
-                    Email = model.Email,
-                    FirstName = model.FirstName,
-                    LastName = model.LastName,
-                    TimeCreated = DateTime.UtcNow
-                };
-
-                _context.Users.Add(newUser);
-                await _context.SaveChangesAsync();
-
-                TempData["SuccessMessage"] = "Account created successfully. Please log in.";
-                return RedirectToAction("Login", "Account");
-            }
-            catch (FirebaseAuthException ex)
-            {
-                TempData["ErrorMessage"] = $"Firebase error: {ex.Message}";
-                return View(model);
-            }
-            catch (Exception ex)
-            {
-                TempData["ErrorMessage"] = $"Unexpected error: {ex.Message}";
-                return View(model);
-            }
-        }
-
-
-        [HttpGet("UpdateUserForm")]
-        public async Task<IActionResult> UpdateUserForm()
-        {
-            var firebaseUid = HttpContext.Session.GetString("FirebaseUid");
-
-            if (string.IsNullOrEmpty(firebaseUid))
-            {
-                return Unauthorized("User not authenticated.");
-            }
-
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.FirebaseUid == firebaseUid);
-
-            if (user == null)
-            {
-                Console.WriteLine("B");
-                return NotFound("User not found.");
-            }
-
-            var model = new UserUpdateDetailsDTO
-            {
-                FirebaseUid = user.FirebaseUid,
-                Email = user.Email,
-                Username = user.Username,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                TimeCreated = user.TimeCreated
+                FirebaseUid = fb.Uid,
+                Username = m.Username,
+                Email = m.Email,
+                FirstName = m.FirstName,
+                LastName = m.LastName,
+                TimeCreated = DateTime.UtcNow,
+                ApiKey = hashed,
+                ApiKeyCreated = DateTime.UtcNow
             };
 
-            return View(model); // Make sure you have a corresponding view
+            _db.Users.Add(user);
+            await _db.SaveChangesAsync();
+
+            TempData["Key"] = plain;             
+            return RedirectToAction("Index", "Api");
         }
-
-
-        [HttpPost("UpdateUser")]
-        public async Task<IActionResult> UpdateUser([FromForm] UserUpdateDTO model)
+        catch (FirebaseAuthException ex)
         {
-            if (!ModelState.IsValid)
-            {
-                TempData["ErrorMessage"] = "Invalid data submitted.";
-                return RedirectToAction("UpdateUserForm");
-            }
-
-            try
-            {
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.FirebaseUid == model.FirebaseUid);
-                if (user == null)
-                {
-                    TempData["ErrorMessage"] = "User not found.";
-                    return RedirectToAction("UpdateUserForm");
-                }
-
-                user.Username = model.Username;
-                user.FirstName = model.FirstName;
-                user.LastName = model.LastName;
-
-                _context.Users.Update(user);
-                await _context.SaveChangesAsync();
-
-                TempData["SuccessMessage"] = "User updated successfully.";
-                return RedirectToAction("UpdateUserForm");
-            }
-            catch (Exception ex)
-            {
-                TempData["ErrorMessage"] = $"An error occurred: {ex.Message}";
-                return RedirectToAction("UpdateUserForm");
-            }
+            TempData["ErrorMessage"] = $"Firebase error: {ex.Message}";
+            return View(m);
         }
+    }
 
+    /*───────────── RE-GENERATE KEY (same page) ─────────────*/
 
-        [HttpGet("DeleteUserForm")]
-        public IActionResult DeleteUserForm()
+    [HttpPost("RegenerateKey")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RegenerateKey()
+    {
+        var uid = HttpContext.Session.GetString("FirebaseUid");
+        if (uid is null) return Unauthorized();
+
+        var user = await _db.Users.FindAsync(uid);
+        if (user is null) return Unauthorized();
+
+        var (plain, hashed) = ApiKeyUtil.NewKey();
+        user.ApiKey = hashed;
+        user.ApiKeyCreated = DateTime.UtcNow;
+
+        await _db.SaveChangesAsync();
+
+        TempData["Key"] = plain;                
+        return RedirectToAction("Index", "Api"); 
+    }
+
+    /*───────────── ONE-TIME KEY PAGE (fallback) ───────────*/
+
+    [HttpGet("ShowKey")]
+    public IActionResult ShowKey()
+    {
+        var key = TempData["Key"] as string;
+        return View("ShowKey", key);
+    }
+
+    /*──────────────────────── PROFILE ─────────────────────*/
+
+    [HttpGet("UpdateUserForm")]
+    public async Task<IActionResult> UpdateUserForm()
+    {
+        var uid = HttpContext.Session.GetString("FirebaseUid");
+        if (uid is null) return Unauthorized();
+
+        var u = await _db.Users.FirstOrDefaultAsync(x => x.FirebaseUid == uid);
+        if (u is null) return NotFound();
+
+        return View(new UserUpdateDetailsDTO
         {
-            return View(new UserDeleteDTO());
-        }
+            FirebaseUid = u.FirebaseUid,
+            Email = u.Email,
+            Username = u.Username,
+            FirstName = u.FirstName,
+            LastName = u.LastName,
+            TimeCreated = u.TimeCreated
+        });
+    }
 
-        [HttpPost("DeleteUser")]
-        public async Task<IActionResult> DeleteUser([FromForm] UserDeleteDTO model)
+    [HttpPost("UpdateUser")]
+    public async Task<IActionResult> UpdateUser([FromForm] UserUpdateDTO m)
+    {
+        if (!ModelState.IsValid) return RedirectToAction(nameof(UpdateUserForm));
+
+        var u = await _db.Users.FirstOrDefaultAsync(x => x.FirebaseUid == m.FirebaseUid);
+        if (u is null) return RedirectToAction(nameof(UpdateUserForm));
+
+        u.Username = m.Username;
+        u.FirstName = m.FirstName;
+        u.LastName = m.LastName;
+        await _db.SaveChangesAsync();
+
+        TempData["SuccessMessage"] = "User updated.";
+        return RedirectToAction(nameof(UpdateUserForm));
+    }
+
+    /*─────────────────── DELETE ACCOUNT ──────────────────*/
+
+    [HttpGet("DeleteUserForm")]
+    public IActionResult DeleteUserForm() => View(new UserDeleteDTO());
+
+    [HttpPost("DeleteUser")]
+    public async Task<IActionResult> DeleteUser([FromForm] UserDeleteDTO m)
+    {
+        if (m.Confirmation?.Trim().ToLower() != "yes")
         {
-            if (!ModelState.IsValid || model.Confirmation?.Trim().ToLower() != "yes")
-            {
-                TempData["ErrorMessage"] = "Account deletion was not confirmed. Please type 'yes' to proceed.";
-                return RedirectToAction("DeleteAccountForm");
-            }
-
-            var firebaseUid = HttpContext.Session.GetString("FirebaseUid");
-            if (string.IsNullOrEmpty(firebaseUid))
-            {
-                return Unauthorized("User not authenticated.");
-            }
-
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.FirebaseUid == firebaseUid);
-            if (user == null)
-            {
-                TempData["ErrorMessage"] = "User not found.";
-                return RedirectToAction("DeleteAccountForm");
-            }
-
-            // Remove user-related data 
-            var favourites = _context.Favourites.Where(f => f.FirebaseUid == firebaseUid);
-            _context.Favourites.RemoveRange(favourites);
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
-
-            await FirebaseAuth.DefaultInstance.DeleteUserAsync(firebaseUid);
-
-            HttpContext.Session.Clear();
-
-            TempData["SuccessMessage"] = "Your account has been deleted.";
-            return RedirectToAction("Login", "Account");
+            TempData["ErrorMessage"] = "Type 'yes' to confirm.";
+            return RedirectToAction(nameof(DeleteUserForm));
         }
 
+        var uid = HttpContext.Session.GetString("FirebaseUid");
+        var u = await _db.Users.FirstOrDefaultAsync(x => x.FirebaseUid == uid);
+        if (u is null) return Unauthorized();
+
+        _db.Favourites.RemoveRange(_db.Favourites.Where(f => f.FirebaseUid == uid));
+        _db.Users.Remove(u);
+        await _db.SaveChangesAsync();
+
+        await FirebaseAuth.DefaultInstance.DeleteUserAsync(uid);
+        HttpContext.Session.Clear();
+
+        TempData["SuccessMessage"] = "Account deleted.";
+        return RedirectToAction(nameof(Login));
     }
 }
