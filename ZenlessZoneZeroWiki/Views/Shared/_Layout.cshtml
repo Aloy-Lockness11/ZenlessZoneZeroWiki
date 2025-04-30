@@ -1,4 +1,7 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Hosting
+@inject IWebHostEnvironment Env
+
+@{
     var isLoggedIn = Context.Session.GetString("AuthToken") != null;
 }
 <!DOCTYPE html>
@@ -47,17 +50,10 @@
                         <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="compareDropdown">
                             <li>
                                 <a class="dropdown-item"
-                                   asp-controller="Characters" asp-action="Compare">
-                                    Compare Characters
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item"
                                    asp-controller="Characters" asp-action="CompareWithWeapon">
-                                    Compare Characters + Weapon
+                                    Compare Character with or w/o Weapon
                                 </a>
                             </li>
-
                         </ul>
                     </li>
 
@@ -163,6 +159,12 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+    @* Hot‐reload script only in Development under dotnet-watch *@
     @RenderSection("Scripts", required: false)
+    @if (Env.IsDevelopment())
+    {
+        <script src="~/aspnetcore-browser-refresh.js"></script>
+    }
 </body>
 </html>
