@@ -21,11 +21,11 @@ namespace ZenlessZoneZeroWiki.Controllers
         // GET: Characters
         public async Task<IActionResult> Index()
         {
-            var characters = await _context.Characters.ToListAsync();
-            var firebaseUid = User?.Claims?.FirstOrDefault(c => c.Type == "uid")?.Value;
-            var favoritedCharacterIds = new List<int>();
+            var characters = await _context.Characters.ToListAsync(); 
 
-            if (firebaseUid != null)
+            var firebaseUid = HttpContext.Session.GetString("FirebaseUid");
+            var favoritedCharacterIds = new List<int>();
+            if (!string.IsNullOrEmpty(firebaseUid))
             {
                 favoritedCharacterIds = await _context.Favourites
                     .Where(f => f.FirebaseUid == firebaseUid && f.CharacterID != null)
@@ -33,9 +33,15 @@ namespace ZenlessZoneZeroWiki.Controllers
                     .ToListAsync();
             }
 
-            ViewBag.FavoritedCharacterIds = favoritedCharacterIds;
-            return View(characters);
+            var dto = new CharacterListDTO
+            {
+                Characters = characters,
+                FavoritedCharacterIds = favoritedCharacterIds
+            };
+
+            return View("CharacterListView", dto); 
         }
+
 
         // GET: Characters/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -130,8 +136,26 @@ namespace ZenlessZoneZeroWiki.Controllers
         public async Task<IActionResult> CharacterListView()
         {
             var characters = await _context.Characters.ToListAsync();
-            return View("CharacterListView", characters);
+            var firebaseUid = HttpContext.Session.GetString("FirebaseUid");
+
+            var favoritedCharacterIds = new List<int>();
+            if (!string.IsNullOrEmpty(firebaseUid))
+            {
+                favoritedCharacterIds = await _context.Favourites
+                    .Where(f => f.FirebaseUid == firebaseUid && f.CharacterID != null)
+                    .Select(f => f.CharacterID.Value)
+                    .ToListAsync();
+            }
+
+            var dto = new CharacterListDTO
+            {
+                Characters = characters,
+                FavoritedCharacterIds = favoritedCharacterIds
+            };
+
+            return View("CharacterListView", dto);
         }
+
 
         // GET: /Characters/CharacterDetailsView/5
         [HttpGet]

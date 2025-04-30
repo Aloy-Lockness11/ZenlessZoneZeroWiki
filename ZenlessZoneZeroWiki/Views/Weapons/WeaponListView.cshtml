@@ -1,8 +1,54 @@
-﻿@model IEnumerable<ZenlessZoneZeroWiki.Models.Weapon>
+﻿@model ZenlessZoneZeroWiki.Dto.WeaponListDTO
+
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Weapon List";
     var isLoggedIn = Context.Session.GetString("AuthToken") != null;
+}
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- SweetAlert2 Toast Library -->
+
+    <script>
+        async function toggleWeaponFavourite(event, weaponId) {
+            event.preventDefault();
+
+            try {
+                const response = await fetch('/Favourites/ToggleFavourite', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `weaponId=${weaponId}`
+                });
+
+                if (response.ok) {
+                    const starIcon = document.getElementById(`fav-star-${weaponId}`);
+                    let added = false;
+
+                    if (starIcon.classList.contains('bi-star')) {
+                        starIcon.classList.remove('bi-star', 'text-light');
+                        starIcon.classList.add('bi-star-fill', 'text-warning');
+                        added = true;
+                    } else {
+                        starIcon.classList.remove('bi-star-fill', 'text-warning');
+                        starIcon.classList.add('bi-star', 'text-light');
+                        added = false;
+                    }
+
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: added ? 'success' : 'info',
+                        title: added ? 'Added to favorites!' : 'Removed from favorites!',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
+            } catch (error) {
+                console.error('Failed to toggle favorite:', error);
+            }
+        }
+    </script>
 }
 
 <div class="container py-4 lava-lamp">
@@ -10,30 +56,37 @@
     <hr />
 
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
-        @foreach (var weapon in Model)
+        @foreach (var weapon in Model.Weapons)
         {
             <div class="col">
                 <div class="glow-border">
                     <div class="card weapon-card border-0 glowing-image-container position-relative">
-                        <span class="position-absolute" style="top:1rem; right:1rem; font-size:1.25rem; color:gold; z-index:10;">
+                        <span class="position-absolute" style="top:1rem; right:1rem; font-size:1.5rem; z-index:10;">
                             @if (isLoggedIn)
                             {
-                                <a asp-controller="Favourites" asp-action="ToggleFavourite" asp-route-characterId="@weapon.WeaponID">
-                                    <i class="bi bi-star-fill" title="Add to Favourites"></i>
+                                <a href="#" onclick="toggleWeaponFavourite(event, @weapon.WeaponID)">
+                                    <i id="fav-star-@weapon.WeaponID"
+                                       class="bi @(Model.FavoritedWeaponIds.Contains(weapon.WeaponID) ? "bi-star-fill text-warning" : "bi-star text-light")"
+                                       title="Toggle Favourite">
+                                    </i>
                                 </a>
                             }
                             else
                             {
                                 <a asp-controller="Account" asp-action="Login"
-                                   asp-route-message="Wanna favorite? You gotta log in first, but I bet you already knew that.">
-                                    <i class="bi bi-star" title="Login to favorite"></i>
+                                   asp-route-message="You must log in to favorite.">
+                                    <i class="bi bi-star text-light" title="Login to favorite"></i>
                                 </a>
                             }
                         </span>
+
                         <div class="card-body text-white d-flex flex-column align-items-center p-4">
                             <img src="@weapon.ImageUrllink" alt="@weapon.Name" class="img-fluid rounded mb-3" style="max-height:150px; object-fit:cover;" />
                             <h5 class="card-title mb-2">@weapon.Name</h5>
-                            <a asp-action="WeaponDetailsView" asp-route-id="@weapon.WeaponID" class="btn btn-warning btn-sm mt-auto">View More Details</a>
+                            <a asp-action="WeaponDetailsView" asp-route-id="@weapon.WeaponID" class="neon-button mt-auto">
+                                View More Details
+                            </a>
+
                         </div>
                     </div>
                 </div>

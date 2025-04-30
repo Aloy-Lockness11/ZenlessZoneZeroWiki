@@ -129,7 +129,6 @@ namespace ZenlessZoneZeroWiki.Controllers
             return Redirect(Request.Headers["Referer"].ToString());
         }
 
-
         // POST: /Favourites/AddCharacter/5
         [HttpPost]
         public async Task<IActionResult> AddCharacter(int id)
@@ -152,9 +151,14 @@ namespace ZenlessZoneZeroWiki.Controllers
 
                 _context.Favourites.Add(favourite);
                 await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Character added to favorites.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Character is already in your favorites.";
             }
 
-            return Json(new { success = true });
+            return RedirectToAction(nameof(FavouriteListView));
         }
 
         // POST: /Favourites/RemoveCharacter/5
@@ -163,7 +167,7 @@ namespace ZenlessZoneZeroWiki.Controllers
         {
             var firebaseUid = GetFirebaseUid();
             if (firebaseUid == null)
-                return Unauthorized(); // Or return Json(new { success = false, message = "Not authenticated" });
+                return Unauthorized();
 
             var fav = await _context.Favourites
                 .FirstOrDefaultAsync(f => f.FirebaseUid == firebaseUid && f.CharacterID == id);
@@ -172,11 +176,15 @@ namespace ZenlessZoneZeroWiki.Controllers
             {
                 _context.Favourites.Remove(fav);
                 await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Character removed from favorites.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Character not found in your favorites.";
             }
 
-            return Json(new { success = true });
+            return RedirectToAction(nameof(FavouriteListView));
         }
-
 
         // POST: /Favourites/AddWeapon/5
         [HttpPost]
@@ -200,9 +208,14 @@ namespace ZenlessZoneZeroWiki.Controllers
 
                 _context.Favourites.Add(favourite);
                 await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Weapon added to favorites.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Weapon is already in your favorites.";
             }
 
-            return Json(new { success = true });
+            return RedirectToAction(nameof(FavouriteListView));
         }
 
         // POST: /Favourites/RemoveWeapon/5
@@ -220,9 +233,14 @@ namespace ZenlessZoneZeroWiki.Controllers
             {
                 _context.Favourites.Remove(fav);
                 await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Weapon removed from favorites.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Weapon not found in your favorites.";
             }
 
-            return Json(new { success = true });
+            return RedirectToAction(nameof(FavouriteListView));
         }
 
         private string GetFirebaseUid()
