@@ -72,20 +72,23 @@
                 </ul>
 
                 <!-- Right-Side Buttons -->
-                <div class="d-flex gap-2">
+                <div class="d-flex py-2 gap-2">
                     @if (!isLoggedIn)
                     {
-                        <a class="btn btn-warning"
-                           href="@Url.Action("Login", "Account")"
-                           role="button">Login</a>
-                        <a class="btn btn-warning"
+
+                        <a class="neon-navbar-button"
+                            href="@Url.Action("Login", "Account")"
+                            role="button">Login</a>
+
+                        <a class="neon-navbar-button"
                            href="@Url.Action("Registeration", "Account")"
                            role="button">Register</a>
+
                     }
                     else
                     {
                         <div class="dropdown">
-                            <a class="btn btn-warning dropdown-toggle"
+                            <a class="neon-navbar-button dropdown-toggle"
                                href="#"
                                role="button"
                                data-bs-toggle="dropdown"
@@ -133,7 +136,7 @@
                         </div>
                     }
 
-                    <a class="btn btn-warning"
+                    <a class="neon-navbar-button"
                        href="https://zenless.hoyoverse.com/en-us/main"
                        role="button"
                        target="_blank">Download Now</a>

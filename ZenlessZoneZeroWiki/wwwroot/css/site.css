@@ -241,3 +241,25 @@ body {
         transform: translateY(2px);
         box-shadow: 0 2px #555; /* pressed look */
     }
+.neon-navbar-button {
+    background-color: #b3e600;
+    color: #000;
+    font-weight: bold;
+    padding: 0.45rem 1rem;
+    border-radius: 12px;
+    border: none;
+    font-size: 1rem;
+    box-shadow: 0 4px #777;
+    transition: background-color 0.15s ease, transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
+}
+
+    .neon-navbar-button:hover {
+        background-color: #ccff00;
+        color: #000;
+        cursor: pointer;
+    }
+
+    .neon-navbar-button:active {
+        transform: translateY(2px);
+        box-shadow: 0 2px #555;
+    }
