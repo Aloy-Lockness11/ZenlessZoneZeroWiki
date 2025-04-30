@@ -24,6 +24,9 @@
             </a>
 
             <!-- Collapsible Navbar Content -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
             <div class="collapse navbar-collapse" id="mainNavbar">
                 <ul class="navbar-nav mx-auto mb-2 mb-lg-0 justify-content-center">
                     <li class="nav-item">
@@ -35,6 +38,28 @@
                            href="@Url.Action("WeaponListView", "Weapons")">Weapons</a>
                     </li>
 
+                    <!-- Compare Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="compareDropdown" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            Compare
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="compareDropdown">
+                            <li>
+                                <a class="dropdown-item"
+                                   asp-controller="Characters" asp-action="Compare">
+                                    Compare Characters
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item"
+                                   asp-controller="Characters" asp-action="CompareWithWeapon">
+                                    Compare Characters + Weapon
+                                </a>
+                            </li>
+
+                        </ul>
+                    </li>
 
                     <li class="nav-item">
                         <a class="nav-link"
@@ -73,8 +98,6 @@
                             </a>
 
                             <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark">
-
-                                <!-- regenerate API key -->
                                 <li>
                                     <form asp-controller="Account"
                                           asp-action="RegenerateKey"
@@ -85,18 +108,14 @@
                                         </button>
                                     </form>
                                 </li>
-
                                 <li><hr class="dropdown-divider" /></li>
-
                                 <li>
                                     <a class="dropdown-item"
                                        href="@Url.Action("UpdateUserForm", "Account")">
                                         Update Account Details
                                     </a>
                                 </li>
-
                                 <li><hr class="dropdown-divider" /></li>
-
                                 <li>
                                     <a class="dropdown-item text-danger"
                                        href="@Url.Action("DeleteUserForm", "Account")">
