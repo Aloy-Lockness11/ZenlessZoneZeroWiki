@@ -1,80 +1,245 @@
 ﻿@model ZenlessZoneZeroWiki.Dto.CharacterWeaponComparisonViewModel
-@using Microsoft.AspNetCore.Mvc.Rendering
-
 @{
+    Layout = "_Layout";
     ViewData["Title"] = "Compare Loadouts";
-}
 
-<h2>@ViewData["Title"]</h2>
+    // ----------------------------------------------------------------
+    // 1) Badge helper
+    Func<int, int, string> StatCell = (mine, theirs) =>
+    {
+        if (mine == theirs) return mine.ToString();
+        var pct = mine > theirs
+                   ? Math.Round((mine - theirs) * 100.0 / theirs)
+                   : Math.Round((theirs - mine) * 100.0 / mine);
+        var cls = mine > theirs ? "bg-success" : "bg-danger";
+        var sign = mine > theirs ? "+" : "–";
+        return $"{mine}<span class=\"badge {cls} ms-2\">{sign}{pct:F0}%</span>";
+    };
 
-<form asp-action="CompareWithWeapon" method="post">
-    <div class="row">
-        <div class="col-md-6">
-            <h4>Left Side</h4>
-            <div class="form-group">
-                <label asp-for="FirstCharacterId">Character</label>
-                <select asp-for="FirstCharacterId"
-                        asp-items="Model.AllCharacters"
-                        class="form-control">
-                    <option value="">-- pick --</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label asp-for="FirstWeaponId">Weapon (optional)</label>
-                <select asp-for="FirstWeaponId"
-                        asp-items="Model.FirstAllowedWeapons"
-                        class="form-control">
-                    <option value="">-- none --</option>
-                </select>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <h4>Right Side</h4>
-            <div class="form-group">
-                <label asp-for="SecondCharacterId">Character</label>
-                <select asp-for="SecondCharacterId"
-                        asp-items="Model.AllCharacters"
-                        class="form-control">
-                    <option value="">-- pick --</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label asp-for="SecondWeaponId">Weapon (optional)</label>
-                <select asp-for="SecondWeaponId"
-                        asp-items="Model.SecondAllowedWeapons"
-                        class="form-control">
-                    <option value="">-- none --</option>
-                </select>
-            </div>
-        </div>
-    </div>
-    <button type="submit" class="btn btn-primary mt-3">Compare</button>
-</form>
-
-@if (Model.FirstCharacter != null && Model.SecondCharacter != null)
-{
-    <hr />
-    <h3>Results</h3>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Stat</th>
-                <th>@Model.FirstCharacter.Name (@Model.FirstWeapon?.Type ?? "No weapon")</th>
-                <th>@Model.SecondCharacter.Name (@Model.SecondWeapon?.Type ?? "No weapon")</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr><td>Raw Attack</td><td>@Model.FirstCharacter.Attack</td><td>@Model.SecondCharacter.Attack</td></tr>
-            <tr><td>Raw Defence</td><td>@Model.FirstCharacter.Defence</td><td>@Model.SecondCharacter.Defence</td></tr>
-            <tr><td>Combined Attack</td><td>@Model.FirstCombinedAttack</td><td>@Model.SecondCombinedAttack</td></tr>
-            <tr><td>Combined Defence</td><td>@Model.FirstCombinedDefence</td><td>@Model.SecondCombinedDefence</td></tr>
-        </tbody>
-    </table>
-    <h4>Observations</h4>
-    <ul>
-        @foreach (var obs in Model.Observations)
+    // ----------------------------------------------------------------
+    // 2) Build observations + collect gap%
+    var obsList = new List<(string Text, double Pct)>();
+    if (Model.FirstCharacter != null && Model.SecondCharacter != null)
+    {
+        void CompareStat(string label, int left, int right)
         {
-            <li>@obs</li>
+            if (left > right)
+            {
+                var pct = Math.Round((left - right) * 100.0 / right);
+                obsList.Add((
+                    $"{Model.FirstCharacter.Name} wins on {label} ({left} vs {right}) by {pct:F0}%",
+                    pct
+                ));
+            }
+            else if (right > left)
+            {
+                var pct = Math.Round((right - left) * 100.0 / left);
+                obsList.Add((
+                    $"{Model.SecondCharacter.Name} wins on {label} ({right} vs {left}) by {pct:F0}%",
+                    pct
+                ));
+            }
+            else
+            {
+                obsList.Add((
+                    $"{label} is tied at {left}.",
+                    0
+                ));
+            }
         }
-    </ul>
+
+        CompareStat("Raw Attack", Model.FirstCharacter.Attack, Model.SecondCharacter.Attack);
+        CompareStat("Raw Defence", Model.FirstCharacter.Defence, Model.SecondCharacter.Defence);
+        CompareStat("Combined Attack", Model.FirstCombinedAttack, Model.SecondCombinedAttack);
+        CompareStat("Combined Defence", Model.FirstCombinedDefence, Model.SecondCombinedDefence);
+    }
+
+    // ----------------------------------------------------------------
+    // 3) Verdict
+    var leftWins = obsList.Count(x => x.Text.StartsWith(Model.FirstCharacter?.Name ?? ""));
+    var rightWins = obsList.Count(x => x.Text.StartsWith(Model.SecondCharacter?.Name ?? ""));
+    string verdict = "", alertCls = "";
+
+    if (Model.FirstCharacter != null && Model.SecondCharacter != null)
+    {
+        if (leftWins > rightWins)
+        {
+            var d = leftWins - rightWins;
+            verdict = $"{Model.FirstCharacter.Name} is better than {Model.SecondCharacter.Name} by {d} stat{(d > 1 ? "s" : "")}.";
+            alertCls = "alert-success";
+        }
+        else if (rightWins > leftWins)
+        {
+            var d = rightWins - leftWins;
+            verdict = $"{Model.SecondCharacter.Name} is better than {Model.FirstCharacter.Name} by {d} stat{(d > 1 ? "s" : "")}.";
+            alertCls = "alert-danger";
+        }
+        else
+        {
+            verdict = "Both loadouts are even.";
+            alertCls = "alert-secondary";
+        }
+    }
+
+    // ----------------------------------------------------------------
+    // 4) Average gap%
+    var winPcts = obsList.Where(x => x.Pct > 0).Select(x => x.Pct).ToList();
+    var avgPct = winPcts.Any() ? winPcts.Average() : 0;
 }
+
+<!-- Full‐screen background wrapper -->
+<style>
+    .compare-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url('/images/your-wallpaper.jpg');
+        background-size: cover;
+        background-position: center;
+        z-index: -1;
+    }
+</style>
+<div class="compare-bg"></div>
+
+<div class="container py-5 text-light position-relative" style="z-index:1;">
+    <h1 class="mb-4">@ViewData["Title"]</h1>
+
+    <form asp-action="CompareWithWeapon" method="post" class="mb-5">
+        <div class="row g-4">
+            <!-- Left / Right pickers (unchanged) -->
+            <div class="col-md-6">
+                <div class="card bg-white bg-opacity-75 text-dark p-3" style="backdrop-filter: blur(6px);">
+                    <h5>Left Side</h5>
+                    <div class="mb-3">
+                        <label asp-for="FirstCharacterId" class="form-label">Character</label>
+                        <select asp-for="FirstCharacterId" asp-items="Model.AllCharacters" class="form-select">
+                            <option value="">-- pick one --</option>
+                        </select>
+                        <span asp-validation-for="FirstCharacterId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="FirstWeaponId" class="form-label">Weapon (optional)</label>
+                        <select asp-for="FirstWeaponId" asp-items="Model.FirstAllowedWeapons" class="form-select">
+                            <option value="">-- none --</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-white bg-opacity-75 text-dark p-3" style="backdrop-filter: blur(6px);">
+                    <h5>Right Side</h5>
+                    <div class="mb-3">
+                        <label asp-for="SecondCharacterId" class="form-label">Character</label>
+                        <select asp-for="SecondCharacterId" asp-items="Model.AllCharacters" class="form-select">
+                            <option value="">-- pick one --</option>
+                        </select>
+                        <span asp-validation-for="SecondCharacterId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="SecondWeaponId" class="form-label">Weapon (optional)</label>
+                        <select asp-for="SecondWeaponId" asp-items="Model.SecondAllowedWeapons" class="form-select">
+                            <option value="">-- none --</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-success w-100 mt-4">Compare</button>
+    </form>
+
+    @if (Model.FirstCharacter != null && Model.SecondCharacter != null)
+    {
+        <!-- Character‐cards row (unchanged) -->
+        <div class="row g-4 mb-4">
+            @foreach (var side in new[] {
+        (Model.FirstCharacter, Model.FirstWeapon),
+        (Model.SecondCharacter, Model.SecondWeapon)
+        })
+            {
+                <div class="col-md-6">
+                    <div class="card bg-white bg-opacity-75 text-dark h-100" style="backdrop-filter: blur(6px);">
+                        <img src="@side.Item1.ImageUrllink"
+                             class="card-img-top" style="height:200px; object-fit:cover;" />
+                        <div class="card-body">
+                            <h5 class="card-title">@side.Item1.Name</h5>
+                            <p class="mb-1"><strong>HP:</strong> @side.Item1.HP</p>
+                            <p class="mb-1"><strong>Attack:</strong> @side.Item1.Attack</p>
+                            <p class="mb-1"><strong>Defence:</strong> @side.Item1.Defence</p>
+                            @if (side.Item2 != null)
+                            {
+                                <hr />
+                                <p class="mb-1">
+                                    <img src="@side.Item2.ImageUrllink"
+                                         class="me-2"
+                                         style="width:32px; height:32px; object-fit:contain;" />
+                                    <strong>Weapon:</strong> @side.Item2.Name
+                                </p>
+                                <p class="mb-0">
+                                    +Attack: @side.Item2.AttackDMG |
+                                    +Defence: @side.Item2.Defence
+                                </p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- WRAPPED START: stats + observations -->
+        <div class="card bg-white bg-opacity-75 text-dark p-4 mb-5" style="backdrop-filter: blur(6px);">
+
+            <div class="mb-5">
+                @foreach (var stat in new[] {
+            ("Raw Attack",       Model.FirstCharacter.Attack,      Model.SecondCharacter.Attack),
+            ("Raw Defence",      Model.FirstCharacter.Defence,     Model.SecondCharacter.Defence),
+            ("Combined Attack",  Model.FirstCombinedAttack,        Model.SecondCombinedAttack),
+            ("Combined Defence", Model.FirstCombinedDefence,       Model.SecondCombinedDefence),
+            })
+                {
+                    var left = stat.Item2;
+                    var right = stat.Item3;
+                    var tot = left + right;
+                    var lPct = tot == 0 ? 50 : (int)Math.Round(left * 100.0 / tot);
+                    var rPct = 100 - lPct;
+
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <strong>@stat.Item1</strong>
+                            <div>
+                                <span class="badge @(left  >= right ? "bg-success" : "bg-danger")">@left</span>
+                                vs
+                                <span class="badge @(right >= left  ? "bg-success" : "bg-danger")">@right</span>
+                            </div>
+                        </div>
+                        <div class="progress" style="height:.75rem;">
+                            <div class="progress-bar bg-success" style="width:@lPct%"></div>
+                            <div class="progress-bar bg-danger" style="width:@rPct%"></div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <h4 class="mt-4">Observations</h4>
+            <ul>
+                @foreach (var o in obsList)
+                {
+                    <li>@o.Text</li>
+                }
+            </ul>
+
+            @if (winPcts.Any())
+            {
+                <p class="mt-3 mb-0">
+                    <strong>Average strength gap:</strong>
+                    @avgPct.ToString("F0")% across winning stats.
+                </p>
+            }
+        </div>
+        <!-- Conclusion remains outside, exactly as before -->
+        <div class="alert @alertCls mb-4">
+            <strong>Conclusion:</strong> @verdict
+        </div>
+    }
+</div>
