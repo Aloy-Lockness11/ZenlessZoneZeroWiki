@@ -1,0 +1,80 @@
+﻿@model ZenlessZoneZeroWiki.Dto.CharacterWeaponComparisonViewModel
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Compare Loadouts";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="CompareWithWeapon" method="post">
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Left Side</h4>
+            <div class="form-group">
+                <label asp-for="FirstCharacterId">Character</label>
+                <select asp-for="FirstCharacterId"
+                        asp-items="Model.AllCharacters"
+                        class="form-control">
+                    <option value="">-- pick --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="FirstWeaponId">Weapon (optional)</label>
+                <select asp-for="FirstWeaponId"
+                        asp-items="Model.FirstAllowedWeapons"
+                        class="form-control">
+                    <option value="">-- none --</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h4>Right Side</h4>
+            <div class="form-group">
+                <label asp-for="SecondCharacterId">Character</label>
+                <select asp-for="SecondCharacterId"
+                        asp-items="Model.AllCharacters"
+                        class="form-control">
+                    <option value="">-- pick --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="SecondWeaponId">Weapon (optional)</label>
+                <select asp-for="SecondWeaponId"
+                        asp-items="Model.SecondAllowedWeapons"
+                        class="form-control">
+                    <option value="">-- none --</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary mt-3">Compare</button>
+</form>
+
+@if (Model.FirstCharacter != null && Model.SecondCharacter != null)
+{
+    <hr />
+    <h3>Results</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Stat</th>
+                <th>@Model.FirstCharacter.Name (@Model.FirstWeapon?.Type ?? "No weapon")</th>
+                <th>@Model.SecondCharacter.Name (@Model.SecondWeapon?.Type ?? "No weapon")</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>Raw Attack</td><td>@Model.FirstCharacter.Attack</td><td>@Model.SecondCharacter.Attack</td></tr>
+            <tr><td>Raw Defence</td><td>@Model.FirstCharacter.Defence</td><td>@Model.SecondCharacter.Defence</td></tr>
+            <tr><td>Combined Attack</td><td>@Model.FirstCombinedAttack</td><td>@Model.SecondCombinedAttack</td></tr>
+            <tr><td>Combined Defence</td><td>@Model.FirstCombinedDefence</td><td>@Model.SecondCombinedDefence</td></tr>
+        </tbody>
+    </table>
+    <h4>Observations</h4>
+    <ul>
+        @foreach (var obs in Model.Observations)
+        {
+            <li>@obs</li>
+        }
+    </ul>
+}

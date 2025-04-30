@@ -1,5 +1,4 @@
-﻿
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Pomelo.EntityFrameworkCore.MySql;
 using ZenlessZoneZeroWiki.Data;
 using FirebaseAdmin;
@@ -23,34 +22,41 @@ builder.Services.AddDbContext<ZenlessZoneZeroContext>(options =>
     options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 21)))
 );
 
-// 1. Register services
+// 1. Register MVC, Razor Pages, Blazor
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
 
 var app = builder.Build();
+
+// Seed your database
 SeedDatabase.Initialize(app);
 
-// Middleware registration
-app.UseMiddleware<FirebaseAuthMiddleware>();
-
-// 3. Use environment-specific middleware
-if (!app.Environment.IsDevelopment())
+// 2. In Development, show detailed errors.
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+else
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 
-// 4. Configure the HTTP pipeline
+// 3. Custom Firebase Auth middleware
+app.UseMiddleware<FirebaseAuthMiddleware>();
+
+// 4. Standard pipeline
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+
+// session *before* authorization
 app.UseSession();
 app.UseAuthorization();
 
-
-
+// 5. Routes
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
