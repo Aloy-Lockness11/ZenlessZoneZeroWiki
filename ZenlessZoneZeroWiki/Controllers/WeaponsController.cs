@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ZenlessZoneZeroWiki.Data;
+using ZenlessZoneZeroWiki.Dto;
 using ZenlessZoneZeroWiki.Models;
 
 namespace ZenlessZoneZeroWiki.Controllers
@@ -150,7 +151,25 @@ namespace ZenlessZoneZeroWiki.Controllers
         public async Task<IActionResult> WeaponListView()
         {
             var weapons = await _context.Weapons.ToListAsync();
-            return View("WeaponListView", weapons);
+
+            var firebaseUid = HttpContext.Session.GetString("FirebaseUid");
+            var favoritedWeaponIds = new List<int>();
+
+            if (!string.IsNullOrEmpty(firebaseUid))
+            {
+                favoritedWeaponIds = await _context.Favourites
+                    .Where(f => f.FirebaseUid == firebaseUid && f.WeaponID != null)
+                    .Select(f => f.WeaponID.Value)
+                    .ToListAsync();
+            }
+
+            var dto = new WeaponListDTO
+            {
+                Weapons = weapons,
+                FavoritedWeaponIds = favoritedWeaponIds
+            };
+
+            return View("WeaponListView", dto);
         }
 
         // GET: /Weapons/WeaponDetailsView/5
