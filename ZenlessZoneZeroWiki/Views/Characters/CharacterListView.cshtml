@@ -1,9 +1,9 @@
-﻿@model IEnumerable<ZenlessZoneZeroWiki.Models.Character>
+﻿@model ZenlessZoneZeroWiki.Dto.CharacterListDTO
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Characters";
-    var favoritedCharacterIds = ViewBag.FavoritedCharacterIds as List<int> ?? new List<int>();
+    var favoritedCharacterIds = Model.FavoritedCharacterIds;
     var isLoggedIn = Context.Session.GetString("AuthToken") != null;
 }
 
@@ -58,7 +58,7 @@
     <hr class="text-white" />
 
     <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
-        @foreach (var character in Model)
+        @foreach (var character in Model.Characters)
         {
             <div class="col">
                 <div class="card character-card border-0 glowing-image-container position-relative">
