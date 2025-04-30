@@ -1,0 +1,22 @@
+﻿@{
+    ViewData["Title"] = "Verify Your Email";
+    var email = TempData["RegisteredEmail"] as string;
+}
+
+<div class="container mt-5 text-center">
+    <h2 class="mb-4">Verify Your Email</h2>
+    <p>We’ve sent a verification link to <strong>@email</strong>.</p>
+    <p>Please check your inbox and verify your email address to complete registration.</p>
+
+    <form asp-action="ResendVerification" asp-controller="Account" method="post" class="mt-4">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="email" value="@email" />
+        <button type="submit" class="btn btn-warning">Resend Verification Email</button>
+    </form>
+
+    <div class="mt-3">
+        <a asp-action="Login" asp-controller="Account" class="btn btn-outline-primary">Back to Login</a>
+    </div>
+
+    <partial name="_TempDataMessages" />
+</div>

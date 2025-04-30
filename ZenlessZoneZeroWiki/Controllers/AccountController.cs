@@ -1,6 +1,8 @@
 ﻿using FirebaseAdmin.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Mail;
+using System.Net;
 using ZenlessZoneZeroWiki.Data;
 using ZenlessZoneZeroWiki.Dto;
 using ZenlessZoneZeroWiki.Models;       
@@ -30,17 +32,30 @@ public class AccountController : Controller
 
         try
         {
+            // 1. Get Firebase user by email
             var rec = await FirebaseAuth.DefaultInstance.GetUserByEmailAsync(m.Email);
-            var tok = await FirebaseAuth.DefaultInstance.CreateCustomTokenAsync(rec.Uid);
 
+            // 2. Check if email is verified
+            if (!rec.EmailVerified)
+            {
+                TempData["ErrorMessage"] = "Please verify your email before logging in.";
+                TempData["UnverifiedEmail"] = m.Email;
+                return View("Login", m);
+            }
+
+
+            // 3. Ensure user exists in your DB
             if (await _db.Users.FirstOrDefaultAsync(u => u.Email == m.Email) is null)
             {
                 TempData["ErrorMessage"] = "User not registered.";
                 return View("Login", m);
             }
 
+            // 4. Create custom Firebase token and set session
+            var tok = await FirebaseAuth.DefaultInstance.CreateCustomTokenAsync(rec.Uid);
             HttpContext.Session.SetString("AuthToken", tok);
             HttpContext.Session.SetString("FirebaseUid", rec.Uid);
+
             return RedirectToAction("Index", "Home");
         }
         catch (FirebaseAuthException)
@@ -50,12 +65,54 @@ public class AccountController : Controller
         }
     }
 
+
     [HttpPost("Logout")]
     public IActionResult Logout()
     {
         HttpContext.Session.Clear();
         TempData["SuccessMessage"] = "You’ve been logged out.";
         return RedirectToAction(nameof(Login));
+    }
+    [HttpPost("ResendVerification")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ResendVerification(string email)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            TempData["ErrorMessage"] = "Email required.";
+            return RedirectToAction("Login");
+        }
+
+        try
+        {
+            var user = await FirebaseAuth.DefaultInstance.GetUserByEmailAsync(email);
+
+            if (user.EmailVerified)
+            {
+                TempData["SuccessMessage"] = "Email is already verified. You can log in.";
+            }
+            else
+            {
+                var link = await FirebaseAuth.DefaultInstance.GenerateEmailVerificationLinkAsync(email);
+
+                await SendEmailAsync(
+                    email,
+                    "Resend: Verify your email",
+                    $@"
+                <p>Hello,</p>
+                <p>Click the link below to verify your email address:</p>
+                <p><a href='{link}'>Verify Email</a></p>"
+                );
+
+                TempData["SuccessMessage"] = "Verification email sent again!";
+            }
+        }
+        catch (FirebaseAuthException ex)
+        {
+            TempData["ErrorMessage"] = $"Error: {ex.Message}";
+        }
+
+        return RedirectToAction("Login");
     }
 
     /*───────────────── REGISTRATION (+ first API-key) ───────────────*/
@@ -77,6 +134,14 @@ public class AccountController : Controller
                 DisplayName = m.Username
             });
 
+            // Generate email verification link
+            var verificationLink = await FirebaseAuth.DefaultInstance.GenerateEmailVerificationLinkAsync(m.Email);
+
+            // Send it using your email service
+            await SendEmailAsync(m.Email, "Verify your email",
+                $"Please verify your email by clicking the following link: <a href='{verificationLink}'>Verify Email</a>");
+
+
             // mint first key
             var (plain, hashed) = ApiKeyUtil.NewKey();
 
@@ -95,8 +160,10 @@ public class AccountController : Controller
             _db.Users.Add(user);
             await _db.SaveChangesAsync();
 
-            TempData["Key"] = plain;             
-            return RedirectToAction("Index", "Api");
+            TempData["Key"] = plain;
+            TempData["RegisteredEmail"] = m.Email;
+            return RedirectToAction("AwaitVerification", "Account");
+
         }
         catch (FirebaseAuthException ex)
         {
@@ -202,5 +269,36 @@ public class AccountController : Controller
 
         TempData["SuccessMessage"] = "Account deleted.";
         return RedirectToAction(nameof(Login));
+    }
+
+    [HttpGet("AwaitVerification")]
+    public IActionResult AwaitVerification()
+    {
+        if (TempData["RegisteredEmail"] is null)
+            return RedirectToAction("Login");
+
+        return View();
+    }
+
+
+    private async Task SendEmailAsync(string toEmail, string subject, string htmlBody)
+    {
+        var smtpClient = new SmtpClient("smtp.gmail.com")
+        {
+            Port = 587,
+            Credentials = new NetworkCredential("aloysiuspacheco2003@gmail.com", "axim wcdg nolf oovg"),
+            EnableSsl = true,
+        };
+
+        var mailMessage = new MailMessage
+        {
+            From = new MailAddress("aloysiuspacheco2003@gmail.com"),
+            Subject = subject,
+            Body = htmlBody,
+            IsBodyHtml = true
+        };
+
+        mailMessage.To.Add(toEmail);
+        await smtpClient.SendMailAsync(mailMessage);
     }
 }
