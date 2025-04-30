@@ -76,7 +76,7 @@
                         }
                         else
                         {
-                            <a asp-controller="Account" asp-action="Login" asp-route-message="Please login to favorite!" class="text-light">
+                            <a asp-controller="Account" asp-action="Login" asp-route-message="You must Login to favorite. But i bet you already knew that" class="text-light">
                                 <i class="bi bi-star" title="Login to favorite"></i>
                             </a>
                         }
@@ -90,7 +90,7 @@
                         <h5 class="card-title mb-2">@character.Name</h5>
 
                         <a asp-controller="Characters" asp-action="CharacterDetailsView" asp-route-id="@character.CharacterID"
-                           class="btn btn-sm btn-primary mt-2" style="min-width: 140px;">
+                           class="neon-button mt-2">
                             View Details
                         </a>
                     </div>
