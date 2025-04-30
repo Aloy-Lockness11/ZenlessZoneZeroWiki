@@ -19,10 +19,10 @@ namespace ZenlessZoneZeroWiki.Controllers
         {
             var characters = await _context.Characters.ToListAsync();
 
-            var firebaseUid = User?.Claims?.FirstOrDefault(c => c.Type == "uid")?.Value;
+            var firebaseUid = HttpContext.Session.GetString("FirebaseUid");
             var favoritedCharacterIds = new List<int>();
 
-            if (firebaseUid != null)
+            if (!string.IsNullOrEmpty(firebaseUid))
             {
                 favoritedCharacterIds = await _context.Favourites
                     .Where(f => f.FirebaseUid == firebaseUid && f.CharacterID != null)

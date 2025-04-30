@@ -1,52 +1,98 @@
 ﻿@model IEnumerable<ZenlessZoneZeroWiki.Models.Character>
+
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewData["Title"] = "Character List";
-    var isLoggedIn = Context.Session.GetString("AuthToken") != null;
+    ViewData["Title"] = "Characters";
     var favoritedCharacterIds = ViewBag.FavoritedCharacterIds as List<int> ?? new List<int>();
-
+    var isLoggedIn = Context.Session.GetString("AuthToken") != null;
 }
 
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- SweetAlert2 Toast Library -->
 
-<div class="container py-4 lava-lamp">
+    <script>
+        async function toggleFavourite(event, characterId) {
+            event.preventDefault();
+            try {
+                const response = await fetch('/Favourites/ToggleFavourite', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `characterId=${characterId}`
+                });
+
+                if (response.ok) {
+                    const starIcon = document.getElementById(`fav-star-${characterId}`);
+                    let added = false;
+
+                    if (starIcon.classList.contains('bi-star')) {
+                        starIcon.classList.remove('bi-star', 'text-light');
+                        starIcon.classList.add('bi-star-fill', 'text-warning');
+                        added = true;
+                    } else {
+                        starIcon.classList.remove('bi-star-fill', 'text-warning');
+                        starIcon.classList.add('bi-star', 'text-light');
+                        added = false;
+                    }
+
+                    // Show success toast!
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: added ? 'success' : 'info',
+                        title: added ? 'Added to favorites!' : 'Removed from favorites!',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
+            } catch (error) {
+                console.error('Failed to toggle favorite:', error);
+            }
+        }
+    </script>
+}
+
+<div class="container py-4">
     <h2 class="text-white">@ViewData["Title"]</h2>
     <hr class="text-white" />
-    @await Html.PartialAsync("_TempDataMessages")
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
-        
+
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
         @foreach (var character in Model)
         {
-            
-
             <div class="col">
-                <div class="glow-border">
-                    <div class="card character-card border-0 glowing-image-container position-relative">
-                        <span class="position-absolute" style="top: 1rem; right: 1rem; font-size: 1.25rem; color: gold; z-index: 10;">
-                            @if (isLoggedIn)
-                            {
-                                bool isFav = favoritedCharacterIds.Contains(character.CharacterID);
+                <div class="card character-card border-0 glowing-image-container position-relative">
 
-                                <form asp-controller="Favourites" asp-action="ToggleFavourite" method="post">
-                                    <input type="hidden" name="characterId" value="@character.CharacterID" />
-                                    <button type="submit" class="btn btn-link p-0 m-0 border-0" title="Toggle Favourite">
-                                        <i class="bi @(isFav ? "bi-star-fill" : "bi-star")"></i>
-                                    </button>
-                                </form>
-                            }
-                            else
-                            {
-                                <a asp-controller="Account" asp-action="Login"
-                                   asp-route-message="Wanna favorite? You gotta log in first, but I bet you already knew that.">
-                                    <i class="bi bi-star" title="Login to favorite"></i>
-                                </a>
-                            }
-                        </span>
+                    <!-- Favorite Star -->
+                    <div class="position-absolute" style="top: 1rem; right: 1rem; font-size: 2rem; z-index: 10;">
+                        @if (isLoggedIn)
+                        {
+                            <a href="#" onclick="toggleFavourite(event, @character.CharacterID)">
+                                <i id="fav-star-@character.CharacterID"
+                                   class="bi @(favoritedCharacterIds.Contains(character.CharacterID) ? "bi-star-fill text-warning" : "bi-star text-light")"
+                                   title="Toggle Favourite">
+                                </i>
+                            </a>
+                        }
+                        else
+                        {
+                            <a asp-controller="Account" asp-action="Login" asp-route-message="Please login to favorite!" class="text-light">
+                                <i class="bi bi-star" title="Login to favorite"></i>
+                            </a>
+                        }
+                    </div>
 
-                        <div class="card-body text-white d-flex flex-column align-items-center p-4">
-                            <img src="@character.ImageUrllink" alt="@character.Name" class="img-fluid rounded mb-3" style="max-height:150px; object-fit:cover;" />
-                            <h5 class="card-title mb-2">@character.Name</h5>
-                            <a asp-action="CharacterDetailsView" asp-route-id="@character.CharacterID" class="btn btn-warning btn-sm mt-auto">View More Details</a>
-                        </div>
+                    <div class="card-body text-white d-flex flex-column align-items-center p-4">
+                        <img src="@character.ImageUrllink"
+                             alt="@character.Name"
+                             class="img-fluid rounded mb-3"
+                             style="max-height: 150px; object-fit: cover;" />
+                        <h5 class="card-title mb-2">@character.Name</h5>
+
+                        <a asp-controller="Characters" asp-action="CharacterDetailsView" asp-route-id="@character.CharacterID"
+                           class="btn btn-sm btn-primary mt-2" style="min-width: 140px;">
+                            View Details
+                        </a>
                     </div>
                 </div>
             </div>

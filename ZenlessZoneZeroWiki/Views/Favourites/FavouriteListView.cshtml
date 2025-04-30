@@ -9,6 +9,16 @@
     <h2>@ViewData["Title"]</h2>
     <hr />
 
+    <!-- Success/Error messages -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+
     <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
         @if (!Model.Any())
         {
@@ -20,40 +30,53 @@
                 <div class="card weapon-card border-0 glowing-image-container">
 
                     <span class="position-absolute"
-                    style="top: 1rem; left: 1rem; font-size: 1.25rem; color: #fff;">
-                    <i class="bi bi-lightning-charge-fill"></i>
+                          style="top: 1rem; left: 1rem; font-size: 1.25rem; color: #fff;">
+                        <i class="bi bi-lightning-charge-fill"></i>
                     </span>
 
                     <div class="card-body text-white d-flex flex-column align-items-center p-4">
-                        <!-- Weapon Image -->
+                        <!-- Weapon or Character Image -->
                         <img src="@favourite.ImageUrl"
                              alt="@favourite.Name"
                              class="img-fluid rounded mb-3"
                              style="max-height: 150px; object-fit: cover;" />
 
-                        <!-- Weapon Name -->
+                        <!-- Name -->
                         <h5 class="card-title mb-2">@favourite.Name</h5>
 
+                        <!-- View More Details -->
                         @if (favourite.WeaponID != null)
                         {
                             <a asp-controller="Weapons"
                                asp-action="WeaponDetailsView"
                                asp-route-id="@favourite.WeaponID"
-                               class="btn btn-warning btn-sm mt-auto">
+                               class="btn btn-warning btn-sm mb-2">
                                 View More Details
                             </a>
+
+                            <!-- Remove Weapon Favorite -->
+                            <form asp-controller="Favourites" asp-action="RemoveWeapon" method="post" class="mt-2">
+                                <input type="hidden" name="id" value="@favourite.WeaponID" />
+                                <button type="submit" class="btn btn-danger btn-sm">Remove from Favorites</button>
+                            </form>
                         }
                         else
                         {
                             <a asp-controller="Characters"
                                asp-action="CharacterDetailsView"
                                asp-route-id="@favourite.CharacterID"
-                               class="btn btn-warning btn-sm mt-auto">
+                               class="btn btn-warning btn-sm mb-2">
                                 View More Details
                             </a>
+
+                            <!-- Remove Character Favorite -->
+                            <form asp-controller="Favourites" asp-action="RemoveCharacter" method="post" class="mt-2">
+                                <input type="hidden" name="id" value="@favourite.CharacterID" />
+                                <button type="submit" class="btn btn-danger btn-sm">Remove from Favorites</button>
+                            </form>
                         }
                     </div>
-                    
+
                 </div>
             </div>
         }
