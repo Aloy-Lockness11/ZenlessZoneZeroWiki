@@ -1,4 +1,5 @@
-﻿@using Microsoft.AspNetCore.Hosting
+﻿<!-- _Layout.cshtml -->
+@using Microsoft.AspNetCore.Hosting
 @inject IWebHostEnvironment Env
 
 @{
@@ -38,7 +39,7 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link"
-                           href="@Url.Action("WeaponListView", "Weapons")">Weapons</a>
+                           href="@Url.Action("WeaponListView", "Characters")">Weapons</a>
                     </li>
 
                     <!-- Compare Dropdown -->
@@ -83,15 +84,13 @@
                 <div class="d-flex py-2 gap-2">
                     @if (!isLoggedIn)
                     {
-
                         <a class="neon-navbar-button"
-                            href="@Url.Action("Login", "Account")"
-                            role="button">Login</a>
+                           href="@Url.Action("Login", "Account")"
+                           role="button">Login</a>
 
                         <a class="neon-navbar-button"
                            href="@Url.Action("Registeration", "Account")"
                            role="button">Register</a>
-
                     }
                     else
                     {
@@ -161,11 +160,13 @@
     <!-- FOOTER -->
     <footer class="footer py-3 text-center shadow mt-auto" style="background-color: #000;">
         <div class="container">
-            <span class="text-light">&copy; 2025 – ZenlessZoneZeroWiki</span>
+            <span class="text-light">© 2025 – ZenlessZoneZeroWiki</span>
         </div>
     </footer>
 
     <!-- Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
@@ -192,9 +193,10 @@
 
     @* Hot‐reload script only in Development under dotnet-watch *@
     @RenderSection("Scripts", required: false)
-    @if (Env.IsDevelopment())
+    @* Removed to avoid 404 error *@
+    @* @if (Env.IsDevelopment())
     {
         <script src="~/aspnetcore-browser-refresh.js"></script>
-    }
+    } *@
 </body>
 </html>

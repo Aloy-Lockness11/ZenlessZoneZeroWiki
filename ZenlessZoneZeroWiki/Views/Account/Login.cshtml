@@ -1,4 +1,5 @@
-﻿@model ZenlessZoneZeroWiki.Dto.UserLoginDTO
+﻿<!-- Login.cshtml -->
+@model ZenlessZoneZeroWiki.Dto.UserLoginDTO
 
 @using Microsoft.AspNetCore.Mvc.Rendering
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
@@ -34,6 +35,13 @@
         <button type="submit" class="neon-button">Log In</button>
     </form>
 
+    <div class="mt-3">
+        <button type="button" id="googleSignInButton" class="btn btn-primary" disabled>
+            <span id="googleSignInText">Sign in with Google</span>
+            <span id="googleSignInLoading" class="spinner-border spinner-border-sm d-none" role="status"></span>
+        </button>
+    </div>
+
     @if (!string.IsNullOrEmpty(unverifiedEmail))
     {
         <div class="alert alert-warning mt-3">
@@ -42,9 +50,7 @@
 
         <form asp-action="ResendVerification" asp-controller="Account" method="post" class="mt-2">
             @Html.AntiForgeryToken()
-
             <input type="hidden" name="email" value="@unverifiedEmail" />
-
             <button type="submit" class="btn btn-secondary">Resend Verification Email</button>
         </form>
     }
@@ -55,16 +61,27 @@
     <partial name="_TempDataMessages" />
 </div>
 
-
 @section Scripts {
+    <script src="~/js/firebase.js"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const googleSignInButton = document.getElementById('googleSignInButton');
+            const enableButton = () => {
+                if (window.firebaseAuth && window.firebaseAuth.auth) {
+                    googleSignInButton.disabled = false;
+                    googleSignInButton.addEventListener('click', window.firebaseAuth.signInWithGoogle);
+                } else {
+                    console.error("Firebase auth not initialized, Google Sign-In button remains disabled");
+                }
+            };
+            setTimeout(enableButton, 1000);
+        });
+
         setTimeout(() => {
             document.querySelectorAll('.alert').forEach(alert => {
                 bootstrap.Alert.getOrCreateInstance(alert).close();
             });
         }, 4000);
     </script>
-
     <partial name="_ValidationScriptsPartial" />
 }
-
