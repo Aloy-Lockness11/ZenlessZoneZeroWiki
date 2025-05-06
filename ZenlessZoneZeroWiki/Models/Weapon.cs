@@ -16,5 +16,7 @@ namespace ZenlessZoneZeroWiki.Models
         public string ImageUrllink { get; set; }
 
         public ICollection<Favourite> Favourites { get; set; }
+        public decimal Price { get; set; } // Euro price
+        public string Tier { get; set; } // Meta tier (S+, S, A, B, C, D)
     }
 }

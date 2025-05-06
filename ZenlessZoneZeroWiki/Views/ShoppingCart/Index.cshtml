@@ -1,0 +1,102 @@
+@model ZenlessZoneZeroWiki.Dto.ShoppingCartDTO
+@{
+    ViewData["Title"] = "Shopping Cart";
+    var characterItems = Model.Items.Where(i => i.ItemType == "Character").ToList();
+    var weaponItems = Model.Items.Where(i => i.ItemType == "Weapon").ToList();
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4">🛒 Shopping Cart</h2>
+    @if ((characterItems.Count == 0) && (weaponItems.Count == 0))
+    {
+        <div class="alert alert-info">Your shopping cart is empty.</div>
+    }
+    else
+    {
+        @if (characterItems.Count > 0)
+        {
+            <h4 class="mt-4">Characters</h4>
+            <table class="table table-dark table-striped rounded">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Name</th>
+                        <th>Price (€)</th>
+                        <th>Quantity</th>
+                        <th>Tier</th>
+                        <th>Subtotal (€)</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in characterItems)
+                    {
+                        <tr>
+                            <td>
+                                <img src="@item.ImageUrllink" alt="@item.Name" style="width: 40px; height: 40px; object-fit: cover; border-radius: 6px;" />
+                            </td>
+                            <td>@item.Name</td>
+                            <td>@item.Price.ToString("F0")</td>
+                            <td>@item.Quantity</td>
+                            <td>@item.Tier</td>
+                            <td>@((item.Price * item.Quantity).ToString("F0"))</td>
+                            <td>
+                                <form asp-action="RemoveFromCart" method="post" style="display:inline;">
+                                    <input type="hidden" name="shoppingCartItemId" value="@item.ShoppingCartItemId" />
+                                    <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        @if (weaponItems.Count > 0)
+        {
+            <h4 class="mt-4">Weapons</h4>
+            <table class="table table-dark table-striped rounded">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Name</th>
+                        <th>Price (€)</th>
+                        <th>Quantity</th>
+                        <th>Tier</th>
+                        <th>Subtotal (€)</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in weaponItems)
+                    {
+                        <tr>
+                            <td>
+                                <img src="@item.ImageUrllink" alt="@item.Name" style="width: 40px; height: 40px; object-fit: cover; border-radius: 6px;" />
+                            </td>
+                            <td>@item.Name</td>
+                            <td>@item.Price.ToString("F0")</td>
+                            <td>@item.Quantity</td>
+                            <td>@item.Tier</td>
+                            <td>@((item.Price * item.Quantity).ToString("F0"))</td>
+                            <td>
+                                <form asp-action="RemoveFromCart" method="post" style="display:inline;">
+                                    <input type="hidden" name="shoppingCartItemId" value="@item.ShoppingCartItemId" />
+                                    <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <h4>Total: <span class="text-success">€@Model.TotalPrice.ToString("F0")</span></h4>
+            <div>
+                <a href="/Characters" class="btn btn-secondary">Continue Shopping</a>
+                <form asp-action="Checkout" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-success ms-2">Checkout</button>
+                </form>
+            </div>
+        </div>
+    }
+</div> 
