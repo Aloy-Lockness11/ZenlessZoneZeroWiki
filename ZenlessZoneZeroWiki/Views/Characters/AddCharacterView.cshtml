@@ -1,0 +1,182 @@
+@model ZenlessZoneZeroWiki.Models.Character
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Add New Character";
+}
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <strong>Debug: ModelState Errors</strong>
+        <ul>
+        @foreach (var entry in ViewData.ModelState)
+        {
+            foreach (var error in entry.Value.Errors)
+            {
+                <li><strong>@entry.Key</strong>: @error.ErrorMessage</li>
+            }
+        }
+        </ul>
+    </div>
+}
+
+<div class="container py-4">
+    <h2 class="text-white">@ViewData["Title"]</h2>
+    <hr class="text-white" />
+
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card bg-dark text-white">
+                <div class="card-body">
+                    <form asp-action="AddCharacter" method="post" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Name" class="control-label"></label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="faction" class="control-label"></label>
+                            <select asp-for="faction" class="form-control">
+                                <option value="">Select Faction</option>
+                                <option value="0">STARS_OF_LYRA</option>
+                                <option value="1">GENTLE_HOUSE</option>
+                                <option value="2">BELOBOG_HEAVY_INDUSTRIES</option>
+                                <option value="3">VICTORIA_HOUSEKEEPING_CO</option>
+                                <option value="4">CRIMINAL_INVESTIGATION_SPECIAL_RESPONSE_TEAM</option>
+                                <option value="5">SONS_OF_CALYDON</option>
+                                <option value="6">SECTION_6</option>
+                                <option value="7">OBOL_SQUAD</option>
+                                <option value="8">CUNNING_HARES</option>
+                            </select>
+                            <span asp-validation-for="faction" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Element" class="control-label"></label>
+                            <select asp-for="Element" class="form-control">
+                                <option value="">Select Element</option>
+                                <option value="0">ETHER</option>
+                                <option value="1">FIRE</option>
+                                <option value="2">ICE</option>
+                                <option value="3">ELECTRIC</option>
+                                <option value="4">PHYSICAL</option>
+                            </select>
+                            <span asp-validation-for="Element" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Tier" class="control-label">Tier</label>
+                            <select asp-for="Tier" class="form-control">
+                                <option value="">Select Tier</option>
+                                <option value="S+">S+</option>
+                                <option value="S">S</option>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                                <option value="D">D</option>
+                            </select>
+                            <span asp-validation-for="Tier" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="ImageUrllink" class="control-label">Image URL</label>
+                            <input asp-for="ImageUrllink" class="form-control" />
+                            <span asp-validation-for="ImageUrllink" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Description" class="control-label"></label>
+                            <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Price" class="control-label"></label>
+                            <input asp-for="Price" class="form-control" type="number" step="0.01" />
+                            <span asp-validation-for="Price" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="CharacterType" class="control-label"></label>
+                            <select asp-for="CharacterType" class="form-control">
+                                <option value="">Select Character Type</option>
+                                <option value="0">ATTACK</option>
+                                <option value="1">DEFENCE</option>
+                                <option value="2">SUPPORT</option>
+                                <option value="3">ANOMALY</option>
+                                <option value="4">STUN</option>
+                            </select>
+                            <span asp-validation-for="CharacterType" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="HP" class="control-label"></label>
+                            <input asp-for="HP" class="form-control" type="number" />
+                            <span asp-validation-for="HP" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Attack" class="control-label"></label>
+                            <input asp-for="Attack" class="form-control" type="number" />
+                            <span asp-validation-for="Attack" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Defence" class="control-label"></label>
+                            <input asp-for="Defence" class="form-control" type="number" />
+                            <span asp-validation-for="Defence" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="TypeUrllink" class="control-label">Type Image URL</label>
+                            <input asp-for="TypeUrllink" class="form-control" />
+                            <span asp-validation-for="TypeUrllink" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="FactionimageUrllink" class="control-label">Faction Image URL</label>
+                            <input asp-for="FactionimageUrllink" class="form-control" />
+                            <span asp-validation-for="FactionimageUrllink" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="AllowedWeaponType" class="control-label"></label>
+                            <select asp-for="AllowedWeaponType" class="form-control">
+                                <option value="">Select Allowed Weapon Type</option>
+                                <option value="0">ATTACK</option>
+                                <option value="1">DEFENCE</option>
+                                <option value="2">SUPPORT</option>
+                                <option value="3">ANOMALY</option>
+                                <option value="4">STUN</option>
+                            </select>
+                            <span asp-validation-for="AllowedWeaponType" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="SignatureWeaponId" class="control-label"></label>
+                            <input asp-for="SignatureWeaponId" class="form-control" type="number" />
+                            <span asp-validation-for="SignatureWeaponId" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-plus-circle"></i> Add Character
+                            </button>
+                            <a asp-action="CharacterListView" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Back to List
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+} 

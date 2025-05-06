@@ -10,12 +10,10 @@ using ZenlessZoneZeroWiki.Models;
 
 namespace ZenlessZoneZeroWiki.Controllers
 {
-    public class CharactersController : Controller
+    public class CharactersController : BaseController
     {
-        private readonly ZenlessZoneZeroContext _context;
-        public CharactersController(ZenlessZoneZeroContext context)
+        public CharactersController(ZenlessZoneZeroContext context) : base(context)
         {
-            _context = context;
         }
 
         // GET: Characters
@@ -137,6 +135,13 @@ namespace ZenlessZoneZeroWiki.Controllers
         {
             var characters = await _context.Characters.ToListAsync();
             var firebaseUid = HttpContext.Session.GetString("FirebaseUid");
+            var isAdmin = false;
+            if (!string.IsNullOrEmpty(firebaseUid))
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.FirebaseUid == firebaseUid);
+                isAdmin = user?.IsAdmin ?? false;
+            }
+            ViewBag.IsAdmin = isAdmin;
 
             var favoritedCharacterIds = new List<int>();
             if (!string.IsNullOrEmpty(firebaseUid))
@@ -277,7 +282,7 @@ namespace ZenlessZoneZeroWiki.Controllers
             return View(vm);
         }
 
-        // JSON endpoint: filter only allowed weapons by character’s AllowedWeaponType
+        // JSON endpoint: filter only allowed weapons by character's AllowedWeaponType
         [HttpGet]
         public async Task<IActionResult> GetAllowedWeapons(int characterId)
         {
@@ -293,6 +298,103 @@ namespace ZenlessZoneZeroWiki.Controllers
                 .ToListAsync();
 
             return Json(list);
+        }
+
+        [HttpGet]
+        public IActionResult AddCharacterView()
+        {
+            if (!ViewBag.IsAdmin)
+            {
+                return RedirectToAction("CharacterListView");
+            }
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddCharacter(Character character)
+        {
+            if (!ViewBag.IsAdmin)
+            {
+                return RedirectToAction("CharacterListView");
+            }
+
+            if (ModelState.IsValid)
+            {
+                _context.Add(character);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(CharacterListView));
+            }
+            return View("AddCharacterView", character);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteCharacter(int id)
+        {
+            if (!ViewBag.IsAdmin)
+            {
+                return RedirectToAction("CharacterListView");
+            }
+            var character = await _context.Characters.FindAsync(id);
+            if (character != null)
+            {
+                _context.Characters.Remove(character);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction("CharacterListView");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditCharacterView(int id)
+        {
+            if (!ViewBag.IsAdmin)
+            {
+                return RedirectToAction("CharacterListView");
+            }
+            var character = await _context.Characters.FindAsync(id);
+            if (character == null)
+            {
+                return RedirectToAction("CharacterListView");
+            }
+            return View(character);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditCharacter(Character character)
+        {
+            if (!ViewBag.IsAdmin)
+            {
+                return RedirectToAction("CharacterListView");
+            }
+            if (ModelState.IsValid)
+            {
+                var existing = await _context.Characters.FindAsync(character.CharacterID);
+                if (existing == null)
+                {
+                    return RedirectToAction("CharacterListView");
+                }
+                // Update only the editable fields
+                existing.Name = character.Name;
+                existing.Description = character.Description;
+                existing.faction = character.faction;
+                existing.CharacterType = character.CharacterType;
+                existing.HP = character.HP;
+                existing.Attack = character.Attack;
+                existing.Defence = character.Defence;
+                existing.Element = character.Element;
+                existing.TypeUrllink = character.TypeUrllink;
+                existing.ImageUrllink = character.ImageUrllink;
+                existing.FactionimageUrllink = character.FactionimageUrllink;
+                existing.AllowedWeaponType = character.AllowedWeaponType;
+                existing.Price = character.Price;
+                existing.Tier = character.Tier;
+                existing.SignatureWeaponId = character.SignatureWeaponId;
+                await _context.SaveChangesAsync();
+                return RedirectToAction("CharacterListView");
+            }
+            return View("EditCharacterView", character);
         }
     }
 }

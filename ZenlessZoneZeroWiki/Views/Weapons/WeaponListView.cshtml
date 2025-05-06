@@ -4,6 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Weapon List";
     var isLoggedIn = Context.Session.GetString("AuthToken") != null;
+    var isAdmin = ViewBag.IsAdmin as bool? ?? false;
 }
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- SweetAlert2 Toast Library -->
@@ -74,6 +75,13 @@
     <h2 class="text-white">@ViewData["Title"]</h2>
     <hr />
 
+    @if (isAdmin)
+    {
+        <a asp-controller="Weapons" asp-action="AddWeaponView" class="btn btn-success mb-3">
+            <i class="bi bi-plus-circle"></i> Add New Weapon
+        </a>
+    }
+
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
         @foreach (var weapon in Model.Weapons)
         {
@@ -81,7 +89,7 @@
                 <div class="glow-border">
                     <div class="card weapon-card border-0 glowing-image-container position-relative">
                         <span class="position-absolute" style="top:1rem; right:1rem; font-size:1.5rem; z-index:10;">
-                            @if (isLoggedIn)
+                            @if (isLoggedIn && !isAdmin)
                             {
                                 <a href="#" onclick="toggleWeaponFavourite(event, @weapon.WeaponID)">
                                     <i id="fav-star-@weapon.WeaponID"
@@ -90,7 +98,7 @@
                                     </i>
                                 </a>
                             }
-                            else
+                            else if (!isLoggedIn)
                             {
                                 <a asp-controller="Account" asp-action="Login"
                                    asp-route-message="You must log in to favorite.">
@@ -102,10 +110,11 @@
                         <div class="card-body text-white d-flex flex-column align-items-center p-4">
                             <img src="@weapon.ImageUrllink" alt="@weapon.Name" class="img-fluid rounded mb-3" style="max-height:150px; object-fit:cover;" />
                             <h5 class="card-title mb-2">@weapon.Name</h5>
+                            <div class="mb-2">Price: @string.Format("{0:0.##}", weapon.Price) €</div>
                             <a asp-action="WeaponDetailsView" asp-route-id="@weapon.WeaponID" class="neon-button w-100 mb-2">
                                 View More Details
                             </a>
-                            @if (isLoggedIn)
+                            @if (isLoggedIn && !isAdmin)
                             {
                                 <form asp-controller="ShoppingCart" asp-action="AddToCart" method="post" class="d-inline w-100">
                                     <input type="hidden" name="itemType" value="Weapon" />
@@ -114,6 +123,17 @@
                                         <i class="bi bi-cart-plus"></i> Add to Cart
                                     </button>
                                 </form>
+                            }
+                            @if (isAdmin)
+                            {
+                                <form asp-action="DeleteWeapon" method="post" asp-controller="Weapons" asp-route-id="@weapon.WeaponID" style="display:inline;">
+                                    <button type="submit" class="btn btn-danger btn-sm mt-2" onclick="return confirm('Are you sure you want to delete this weapon?');">
+                                        <i class="bi bi-trash"></i> Delete
+                                    </button>
+                                </form>
+                                <a asp-action="EditWeaponView" asp-controller="Weapons" asp-route-id="@weapon.WeaponID" class="btn btn-warning btn-sm mt-2">
+                                    <i class="bi bi-pencil"></i> Edit
+                                </a>
                             }
                         </div>
                     </div>

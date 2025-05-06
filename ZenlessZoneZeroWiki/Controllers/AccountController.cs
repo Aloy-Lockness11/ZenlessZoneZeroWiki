@@ -10,10 +10,10 @@ using ZenlessZoneZeroWiki.Models;
 namespace ZenlessZoneZeroWiki.Controllers;
 
 [Route("[controller]/[action]")]
-public class AccountController : Controller
+public class AccountController : BaseController
 {
     private readonly ZenlessZoneZeroContext _db;
-    public AccountController(ZenlessZoneZeroContext db) => _db = db;
+    public AccountController(ZenlessZoneZeroContext db) : base(db) => _db = db;
 
     /*──────────────────────── LOGIN ───────────────────────*/
 
@@ -70,7 +70,7 @@ public class AccountController : Controller
     public IActionResult Logout()
     {
         HttpContext.Session.Clear();
-        TempData["SuccessMessage"] = "You’ve been logged out.";
+        TempData["SuccessMessage"] = "You've been logged out.";
         return RedirectToAction(nameof(Login));
     }
     [HttpPost("ResendVerification")]
@@ -141,7 +141,6 @@ public class AccountController : Controller
             await SendEmailAsync(m.Email, "Verify your email",
                 $"Please verify your email by clicking the following link: <a href='{verificationLink}'>Verify Email</a>");
 
-
             // mint first key
             var (plain, hashed) = ApiKeyUtil.NewKey();
 
@@ -154,7 +153,8 @@ public class AccountController : Controller
                 LastName = m.LastName,
                 TimeCreated = DateTime.UtcNow,
                 ApiKey = hashed,
-                ApiKeyCreated = DateTime.UtcNow
+                ApiKeyCreated = DateTime.UtcNow,
+                IsAdmin = m.Email.ToLower() == "admin@zenlesszonezero.com" // Set admin for specific email
             };
 
             _db.Users.Add(user);

@@ -1,0 +1,91 @@
+@model ZenlessZoneZeroWiki.Models.Weapon
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Edit Weapon";
+}
+
+<h2 class="text-white">@ViewData["Title"]</h2>
+<hr class="text-white" />
+
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card bg-dark text-white">
+                <div class="card-body">
+                    <form asp-action="EditWeapon" method="post" enctype="multipart/form-data">
+                        <input type="hidden" asp-for="WeaponID" />
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-group mb-3">
+                            <label asp-for="Name" class="control-label"></label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label asp-for="Type" class="control-label"></label>
+                            <select asp-for="Type" class="form-control">
+                                <option value="">Select Type</option>
+                                <option value="0">ATTACK</option>
+                                <option value="1">DEFENCE</option>
+                                <option value="2">SUPPORT</option>
+                                <option value="3">ANOMALY</option>
+                                <option value="4">STUN</option>
+                            </select>
+                            <span asp-validation-for="Type" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label asp-for="AttackDMG" class="control-label"></label>
+                            <input asp-for="AttackDMG" class="form-control" type="number" />
+                            <span asp-validation-for="AttackDMG" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label asp-for="Defence" class="control-label"></label>
+                            <input asp-for="Defence" class="form-control" type="number" />
+                            <span asp-validation-for="Defence" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label asp-for="Tier" class="control-label">Tier</label>
+                            <select asp-for="Tier" class="form-control">
+                                <option value="">Select Tier</option>
+                                <option value="S+">S+</option>
+                                <option value="S">S</option>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                                <option value="D">D</option>
+                            </select>
+                            <span asp-validation-for="Tier" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label asp-for="ImageUrllink" class="control-label">Image URL</label>
+                            <input asp-for="ImageUrllink" class="form-control" />
+                            <span asp-validation-for="ImageUrllink" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label asp-for="Description" class="control-label"></label>
+                            <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label asp-for="Price" class="control-label"></label>
+                            <input asp-for="Price" class="form-control" type="number" step="0.01" value="@string.Format("{0:0.##}", Model.Price)" />
+                            <span asp-validation-for="Price" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-save"></i> Save Changes
+                            </button>
+                            <a asp-action="WeaponListView" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Back to List
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+} 

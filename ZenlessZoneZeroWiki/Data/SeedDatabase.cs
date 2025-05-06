@@ -26,6 +26,24 @@ namespace ZenlessZoneZeroWiki.Data
             SetDefaultTiers(context);
             SeedRandomPrices(context);
             SetSignatureWeapons(context);
+
+            // Hardcode admin user if not exists
+            if (!context.Users.Any(u => u.IsAdmin))
+            {
+                context.Users.Add(new Models.User
+                {
+                    FirebaseUid = "admin-firebase-uid", 
+                    Username = "admin",
+                    Email = "admin@zenlesszonezero.com",
+                    FirstName = "Admin",
+                    LastName = "User",
+                    TimeCreated = DateTime.UtcNow,
+                    ApiKey = null, // Or generate/set as needed
+                    ApiKeyCreated = null,
+                    IsAdmin = true
+                });
+                context.SaveChanges();
+            }
         }
 
         public static void SeedRandomPrices(ZenlessZoneZeroContext context)

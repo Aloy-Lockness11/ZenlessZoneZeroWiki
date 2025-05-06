@@ -10,12 +10,12 @@ using ZenlessZoneZeroWiki.Services;
 
 namespace ZenlessZoneZeroWiki.Controllers
 {
-    public class ShoppingCartController : Controller
+    public class ShoppingCartController : BaseController
     {
         private readonly ZenlessZoneZeroContext _context;
         private readonly EmailService _emailService;
 
-        public ShoppingCartController(ZenlessZoneZeroContext context, EmailService emailService)
+        public ShoppingCartController(ZenlessZoneZeroContext context, EmailService emailService) : base(context)
         {
             _context = context;
             _emailService = emailService;
@@ -91,6 +91,12 @@ namespace ZenlessZoneZeroWiki.Controllers
             if (string.IsNullOrEmpty(userId))
             {
                 return RedirectToAction("Login", "Account");
+            }
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.FirebaseUid == userId);
+            if (user != null && user.IsAdmin)
+            {
+                TempData["ErrorMessage"] = "Admins cannot add items to the cart.";
+                return RedirectToAction("Index");
             }
             var cart = await _context.ShoppingCarts
                 .Include(c => c.Items)
@@ -178,6 +184,12 @@ namespace ZenlessZoneZeroWiki.Controllers
             {
                 return RedirectToAction("Login", "Account");
             }
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.FirebaseUid == userId);
+            if (user != null && user.IsAdmin)
+            {
+                TempData["ErrorMessage"] = "Admins cannot checkout.";
+                return RedirectToAction("Index");
+            }
             var cart = await _context.ShoppingCarts
                 .Include(c => c.Items)
                 .FirstOrDefaultAsync(c => c.UserFirebaseUid == userId);
@@ -224,7 +236,6 @@ namespace ZenlessZoneZeroWiki.Controllers
                 }
 
                 // Send thank you email
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.FirebaseUid == userId);
                 if (user != null)
                 {
                     string emailBody = $@"<h2>Thank you for your purchase!</h2><p>Here are the items you purchased:</p><ul>";

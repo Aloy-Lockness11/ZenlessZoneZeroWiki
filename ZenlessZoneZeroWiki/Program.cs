@@ -27,6 +27,8 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
+// Add EmailService as a scoped service for dependency injection
+builder.Services.AddScoped<ZenlessZoneZeroWiki.Services.EmailService>();
 
 var app = builder.Build();
 
