@@ -9,7 +9,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add Session to store vital information
 builder.Services.AddSession();
-
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Set session timeout
+    options.Cookie.HttpOnly = true; // Make session cookie HTTP-only
+    options.Cookie.IsEssential = true; // Required for GDPR compliance
+});
 // Add Firebase services
 FirebaseApp.Create(new AppOptions()
 {

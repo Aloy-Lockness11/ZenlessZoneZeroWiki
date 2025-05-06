@@ -5,8 +5,7 @@ using System.Net.Mail;
 using System.Net;
 using ZenlessZoneZeroWiki.Data;
 using ZenlessZoneZeroWiki.Dto;
-using ZenlessZoneZeroWiki.Models;       
-
+using ZenlessZoneZeroWiki.Models;
 namespace ZenlessZoneZeroWiki.Controllers;
 
 [Route("[controller]/[action]")]
@@ -23,6 +22,74 @@ public class AccountController : BaseController
         if (!string.IsNullOrEmpty(message))
             TempData["ErrorMessage"] = message;
         return View();
+    }
+
+    [HttpPost("GoogleLogin")]
+    public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginDTO model)
+    {
+        try
+        {
+            Console.WriteLine("GoogleLogin endpoint hit");
+            // 1. Verify the Firebase ID token
+            var decodedToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(model.IdToken);
+            var uid = decodedToken.Uid;
+            var email = decodedToken.Claims["email"]?.ToString();
+            var name = decodedToken.Claims["name"]?.ToString();
+            var firstName = name?.Split(' ')[0] ?? "Unknown";
+            var lastName = name?.Split(' ').Length > 1 ? name.Split(' ')[1] : "User";
+
+            // 2. Check if user exists in the database, create if not
+            var user = await _db.Users.FirstOrDefaultAsync(u => u.FirebaseUid == uid);
+
+            var verificationLink = await FirebaseAuth.DefaultInstance.GenerateEmailVerificationLinkAsync(email);
+
+            // Send it using your email service
+            await SendEmailAsync(email, "Verify your email",
+                $"Please verify your email by clicking the following link: <a href='{verificationLink}'>Verify Email</a>");
+
+
+            // mint first key
+            var (plain, hashed) = ApiKeyUtil.NewKey();
+
+
+
+            if (user == null)
+            {
+                // Create new user
+                user = new User
+                {
+                    FirebaseUid = uid,
+                    Username = email.Split('@')[0], // Generate username from email
+                    Email = email,
+                    FirstName = firstName,
+                    LastName = lastName,
+                    TimeCreated = DateTime.UtcNow,
+                    ApiKey = hashed,
+                    ApiKeyCreated = DateTime.UtcNow
+                };
+                _db.Users.Add(user);
+
+                // Create a shopping cart for the new user
+                var shoppingCart = new ShoppingCart
+                {
+                    UserFirebaseUid = uid
+                };
+                _db.ShoppingCarts.Add(shoppingCart);
+
+                await _db.SaveChangesAsync();
+            }
+
+            // 3. Set session (same as your email/password login)
+            var token = await FirebaseAuth.DefaultInstance.CreateCustomTokenAsync(uid);
+            HttpContext.Session.SetString("AuthToken", token);
+            HttpContext.Session.SetString("FirebaseUid", uid);
+
+            return Json(new { success = true });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, error = ex.Message });
+        }
     }
 
     [HttpPost("Login")]
