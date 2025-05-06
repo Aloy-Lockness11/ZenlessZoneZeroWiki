@@ -11,14 +11,9 @@ using ZenlessZoneZeroWiki.Models;
 
 namespace ZenlessZoneZeroWiki.Controllers
 {
-    public class WeaponsController : Controller
+    public class WeaponsController : BaseController
     {
-        private readonly ZenlessZoneZeroContext _context;
-
-        public WeaponsController(ZenlessZoneZeroContext context)
-        {
-            _context = context;
-        }
+        public WeaponsController(ZenlessZoneZeroContext context) : base(context) {}
 
         // GET: Weapons
         public async Task<IActionResult> Index()
@@ -189,6 +184,96 @@ namespace ZenlessZoneZeroWiki.Controllers
             }
 
             return View("WeaponDetailsView", weapon);
+        }
+
+        [HttpGet]
+        public IActionResult AddWeaponView()
+        {
+            if (!ViewBag.IsAdmin)
+            {
+                return RedirectToAction("WeaponListView");
+            }
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddWeapon(Weapon weapon)
+        {
+            if (!ViewBag.IsAdmin)
+            {
+                return RedirectToAction("WeaponListView");
+            }
+
+            if (ModelState.IsValid)
+            {
+                _context.Add(weapon);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(WeaponListView));
+            }
+            return View(weapon);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteWeapon(int id)
+        {
+            if (!ViewBag.IsAdmin)
+            {
+                return RedirectToAction("WeaponListView");
+            }
+            var weapon = await _context.Weapons.FindAsync(id);
+            if (weapon != null)
+            {
+                _context.Weapons.Remove(weapon);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction("WeaponListView");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditWeaponView(int id)
+        {
+            if (!ViewBag.IsAdmin)
+            {
+                return RedirectToAction("WeaponListView");
+            }
+            var weapon = await _context.Weapons.FindAsync(id);
+            if (weapon == null)
+            {
+                return RedirectToAction("WeaponListView");
+            }
+            return View(weapon);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditWeapon(Weapon weapon)
+        {
+            if (!ViewBag.IsAdmin)
+            {
+                return RedirectToAction("WeaponListView");
+            }
+            if (ModelState.IsValid)
+            {
+                var existing = await _context.Weapons.FindAsync(weapon.WeaponID);
+                if (existing == null)
+                {
+                    return RedirectToAction("WeaponListView");
+                }
+                // Update only the editable fields
+                existing.Name = weapon.Name;
+                existing.AttackDMG = weapon.AttackDMG;
+                existing.Defence = weapon.Defence;
+                existing.Type = weapon.Type;
+                existing.Description = weapon.Description;
+                existing.ImageUrllink = weapon.ImageUrllink;
+                existing.Price = weapon.Price;
+                existing.Tier = weapon.Tier;
+                await _context.SaveChangesAsync();
+                return RedirectToAction("WeaponListView");
+            }
+            return View("EditWeaponView", weapon);
         }
 
         private bool WeaponExists(int id)

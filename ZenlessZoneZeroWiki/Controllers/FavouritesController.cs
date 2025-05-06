@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace ZenlessZoneZeroWiki.Controllers
 {
-    public class FavouritesController : Controller
+    public class FavouritesController : BaseController
     {
         private readonly ZenlessZoneZeroContext _context;
 
         private string firebaseUid = "firebase-uid-123abc";
 
-        public FavouritesController(ZenlessZoneZeroContext context)
+        public FavouritesController(ZenlessZoneZeroContext context) : base(context)
         {
             _context = context;
         }
@@ -62,6 +62,12 @@ namespace ZenlessZoneZeroWiki.Controllers
             if (firebaseUid == null)
             {
                 TempData["ErrorMessage"] = "You're not logged in.";
+                return Redirect(Request.Headers["Referer"].ToString());
+            }
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.FirebaseUid == firebaseUid);
+            if (user != null && user.IsAdmin)
+            {
+                TempData["ErrorMessage"] = "Admins cannot modify favourites.";
                 return Redirect(Request.Headers["Referer"].ToString());
             }
 
@@ -136,6 +142,12 @@ namespace ZenlessZoneZeroWiki.Controllers
             var firebaseUid = GetFirebaseUid();
             if (firebaseUid == null)
                 return Unauthorized();
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.FirebaseUid == firebaseUid);
+            if (user != null && user.IsAdmin)
+            {
+                TempData["ErrorMessage"] = "Admins cannot add favourites.";
+                return RedirectToAction(nameof(FavouriteListView));
+            }
 
             var exists = await _context.Favourites
                 .AnyAsync(f => f.FirebaseUid == firebaseUid && f.CharacterID == id);
@@ -193,6 +205,12 @@ namespace ZenlessZoneZeroWiki.Controllers
             var firebaseUid = GetFirebaseUid();
             if (firebaseUid == null)
                 return Unauthorized();
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.FirebaseUid == firebaseUid);
+            if (user != null && user.IsAdmin)
+            {
+                TempData["ErrorMessage"] = "Admins cannot add favourites.";
+                return RedirectToAction(nameof(FavouriteListView));
+            }
 
             var exists = await _context.Favourites
                 .AnyAsync(f => f.FirebaseUid == firebaseUid && f.WeaponID == id);

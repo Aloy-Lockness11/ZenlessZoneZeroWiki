@@ -3,6 +3,7 @@
 
 @{
     var isLoggedIn = Context.Session.GetString("AuthToken") != null;
+    var isAdmin = ViewBag.IsAdmin as bool? ?? false;
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -57,45 +58,47 @@
                         </ul>
                     </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link"
-                           href="@Url.Action("Index", "Api")">API</a>
-                    </li>
-
-                    @if (isLoggedIn)
+                    @if (!isAdmin)
                     {
                         <li class="nav-item">
                             <a class="nav-link"
-                               href="@Url.Action("FavouriteListView", "Favourites")">Favourites</a>
+                               href="@Url.Action("Index", "Api")">API</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link position-relative" href="@Url.Action("Index", "ShoppingCart")">
-                                <i class="bi bi-cart4"></i> Cart
-                                <span id="cartBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">
-                                    0
-                                </span>
-                            </a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle position-relative" href="#" id="notificationsDropdown" role="button"
-                               data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-bell"></i>
-                                <span id="notificationsBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">
-                                    0
-                                </span>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" aria-labelledby="notificationsDropdown" style="min-width: 300px;">
-                                <li><h6 class="dropdown-header">Recent Purchases</h6></li>
-                                <li><div id="purchaseHistory" class="px-3 py-2"></div></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <button class="dropdown-item text-center text-primary" id="markAllReadBtn" type="button">
-                                        Mark all as read
-                                    </button>
-                                </li>
-                                <li><a class="dropdown-item text-center" href="@Url.Action("Index", "ShoppingCart")">View All Purchases</a></li>
-                            </ul>
-                        </li>
+                        @if (isLoggedIn)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                   href="@Url.Action("FavouriteListView", "Favourites")">Favourites</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link position-relative" href="@Url.Action("Index", "ShoppingCart")">
+                                    <i class="bi bi-cart4"></i> Cart
+                                    <span id="cartBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">
+                                        0
+                                    </span>
+                                </a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle position-relative" href="#" id="notificationsDropdown" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-bell"></i>
+                                    <span id="notificationsBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">
+                                        0
+                                    </span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" aria-labelledby="notificationsDropdown" style="min-width: 300px;">
+                                    <li><h6 class="dropdown-header">Recent Purchases</h6></li>
+                                    <li><div id="purchaseHistory" class="px-3 py-2"></div></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <button class="dropdown-item text-center text-primary" id="markAllReadBtn" type="button">
+                                            Mark all as read
+                                        </button>
+                                    </li>
+                                    <li><a class="dropdown-item text-center" href="@Url.Action("Index", "ShoppingCart")">View All Purchases</a></li>
+                                </ul>
+                            </li>
+                        }
                     }
                 </ul>
 

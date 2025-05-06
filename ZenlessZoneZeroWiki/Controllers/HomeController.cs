@@ -1,14 +1,15 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using ZenlessZoneZeroWiki.Models;
+using ZenlessZoneZeroWiki.Data;
 
 namespace ZenlessZoneZeroWiki.Controllers;
 
-public class HomeController : Controller
+public class HomeController : BaseController
 {
     private readonly ILogger<HomeController> _logger;
 
-    public HomeController(ILogger<HomeController> logger)
+    public HomeController(ILogger<HomeController> logger, ZenlessZoneZeroContext context) : base(context)
     {
         _logger = logger;
     }
