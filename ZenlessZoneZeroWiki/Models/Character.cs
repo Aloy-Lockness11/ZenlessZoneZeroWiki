@@ -26,5 +26,8 @@ namespace ZenlessZoneZeroWiki.Models
         public WeaponType AllowedWeaponType { get; set; }
 
         public ICollection<Favourite> Favourites { get; set; }
+        public decimal Price { get; set; } // Euro price
+        public string Tier { get; set; } // Meta tier (S+, S, A, B, C, D)
+        public int? SignatureWeaponId { get; set; } // Signature weapon for matching set
     }
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ZenlessZoneZeroWiki.Data;
 
@@ -11,9 +12,11 @@ using ZenlessZoneZeroWiki.Data;
 namespace ZenlessZoneZeroWiki.Migrations
 {
     [DbContext(typeof(ZenlessZoneZeroContext))]
-    partial class ZenlessZoneZeroContextModelSnapshot : ModelSnapshot
+    [Migration("20250505224709_AddTierToCharacterAndWeapon")]
+    partial class AddTierToCharacterAndWeapon
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -66,9 +69,6 @@ namespace ZenlessZoneZeroWiki.Migrations
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(65,30)");
-
-                    b.Property<int?>("SignatureWeaponId")
-                        .HasColumnType("int");
 
                     b.Property<string>("Tier")
                         .IsRequired()

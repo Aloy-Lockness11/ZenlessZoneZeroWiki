@@ -9,6 +9,18 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- SweetAlert2 Toast Library -->
 
     <script>
+        // Function to update cart badge
+        function updateCartBadge() {
+            $.get('@Url.Action("GetCartCount", "ShoppingCart")', function(count) {
+                const badge = $('#cartBadge');
+                if (count > 0) {
+                    badge.text(count).show();
+                } else {
+                    badge.hide();
+                }
+            });
+        }
+
         async function toggleWeaponFavourite(event, weaponId) {
             event.preventDefault();
 
@@ -48,6 +60,13 @@
                 console.error('Failed to toggle favorite:', error);
             }
         }
+
+        // Update cart badge when adding to cart
+        $(document).ready(function() {
+            $('form[action*="AddToCart"]').on('submit', function() {
+                setTimeout(updateCartBadge, 500); // Update badge after a short delay to allow server processing
+            });
+        });
     </script>
 }
 
@@ -86,7 +105,16 @@
                             <a asp-action="WeaponDetailsView" asp-route-id="@weapon.WeaponID" class="neon-button mt-auto">
                                 View More Details
                             </a>
-
+                            @if (isLoggedIn)
+                            {
+                                <form asp-controller="ShoppingCart" asp-action="AddToCart" method="post" class="d-inline">
+                                    <input type="hidden" name="itemType" value="Weapon" />
+                                    <input type="hidden" name="itemId" value="@weapon.WeaponID" />
+                                    <button type="submit" class="neon-button ms-2" title="Add to Cart">
+                                        <i class="bi bi-cart-plus"></i> Add to Cart
+                                    </button>
+                                </form>
+                            }
                         </div>
                     </div>
                 </div>

@@ -14,6 +14,8 @@ namespace ZenlessZoneZeroWiki.Data
         public DbSet<Character> Characters { get; set; }
         public DbSet<Weapon> Weapons { get; set; }
         public DbSet<Favourite> Favourites { get; set; }
+        public DbSet<ShoppingCart> ShoppingCarts { get; set; }
+        public DbSet<ShoppingCartItem> ShoppingCartItems { get; set; }
 
 
            protected override void OnModelCreating(ModelBuilder modelBuilder)

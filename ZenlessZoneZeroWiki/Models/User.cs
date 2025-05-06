@@ -28,6 +28,7 @@ namespace ZenlessZoneZeroWiki.Models
         public DateTime? ApiKeyCreated { get; set; }
 
         public ICollection<Favourite> Favourites { get; set; } = new List<Favourite>();  // Initialize empty list
+        public ShoppingCart ShoppingCart { get; set; } // Persistent shopping cart
     }
 
 }
