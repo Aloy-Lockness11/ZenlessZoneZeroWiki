@@ -76,14 +76,33 @@
                                 </span>
                             </a>
                         </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle position-relative" href="#" id="notificationsDropdown" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-bell"></i>
+                                <span id="notificationsBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">
+                                    0
+                                </span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" aria-labelledby="notificationsDropdown" style="min-width: 300px;">
+                                <li><h6 class="dropdown-header">Recent Purchases</h6></li>
+                                <li><div id="purchaseHistory" class="px-3 py-2"></div></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <button class="dropdown-item text-center text-primary" id="markAllReadBtn" type="button">
+                                        Mark all as read
+                                    </button>
+                                </li>
+                                <li><a class="dropdown-item text-center" href="@Url.Action("Index", "ShoppingCart")">View All Purchases</a></li>
+                            </ul>
+                        </li>
                     }
                 </ul>
 
                 <!-- Right-Side Buttons -->
-                <div class="d-flex py-2 gap-2">
+                <div class="d-flex py-2 gap-2 align-items-center">
                     @if (!isLoggedIn)
                     {
-
                         <a class="neon-navbar-button"
                             href="@Url.Action("Login", "Account")"
                             role="button">Login</a>
@@ -91,11 +110,10 @@
                         <a class="neon-navbar-button"
                            href="@Url.Action("Registeration", "Account")"
                            role="button">Register</a>
-
                     }
                     else
                     {
-                        <div class="dropdown">
+                        <div class="nav-item dropdown me-2">
                             <a class="neon-navbar-button dropdown-toggle"
                                href="#"
                                role="button"
@@ -103,7 +121,6 @@
                                aria-expanded="false">
                                 <i class="bi bi-gear-fill"></i> Account Settings
                             </a>
-
                             <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark">
                                 <li>
                                     <form asp-controller="Account"
@@ -184,9 +201,62 @@
             });
         }
 
-        // Update badge on page load
+        // Function to update purchase history
+        function updatePurchaseHistory() {
+            $.get('@Url.Action("GetPurchaseHistory", "ShoppingCart")', function(response) {
+                if (response.success) {
+                    const container = $('#purchaseHistory');
+                    const badge = $('#notificationsBadge');
+                    
+                    // Check if notifications are marked as read in session
+                    let notificationsRead = sessionStorage.getItem('NotificationsRead') === 'true';
+                    if (response.purchases.length > 0 && !notificationsRead) {
+                        badge.text(response.purchases.length).show();
+                        container.empty();
+                        
+                        response.purchases.forEach(purchase => {
+                            const item = `
+                                <div class="d-flex align-items-center mb-2">
+                                    <img src="${purchase.imageUrllink}" alt="${purchase.name}" 
+                                         class="rounded me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                    <div class="flex-grow-1">
+                                        <div class="small">${purchase.name}</div>
+                                        <div class="small text-muted">
+                                            ${purchase.quantity} × €${purchase.price}
+                                            <span class="badge bg-secondary ms-1">${purchase.tier}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            container.append(item);
+                        });
+                    } else {
+                        badge.hide();
+                        container.html('<div class="text-muted small">No recent purchases</div>');
+                    }
+                }
+            });
+        }
+
+        // Mark all notifications as read
+        $(document).on('click', '#markAllReadBtn', function() {
+            $.post('@Url.Action("MarkNotificationsRead", "ShoppingCart")', function(response) {
+                if (response.success) {
+                    $('#notificationsBadge').hide();
+                    sessionStorage.setItem('NotificationsRead', 'true');
+                }
+            });
+        });
+
+        // Update badges on page load
         $(document).ready(function() {
             updateCartBadge();
+            updatePurchaseHistory();
+            
+            // Update purchase history when notifications dropdown is shown
+            $('#notificationsDropdown').on('shown.bs.dropdown', function() {
+                updatePurchaseHistory();
+            });
         });
     </script>
 
